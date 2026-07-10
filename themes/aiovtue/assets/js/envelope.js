@@ -126,6 +126,19 @@ function syncEnvelopeDanmakuBounds() {
 
   danmaku.style.top = `${top}px`
   danmaku.style.height = `${height}px`
+  tryStartEnvelopeDanmaku()
+}
+
+function tryStartEnvelopeDanmaku() {
+  if (!isEnvelopeDanmakuDesktop()) return
+  if (envelopeDanmakuRunning) return
+  if (!Array.isArray(envelopeDanmakuComments) || !envelopeDanmakuComments.length) return
+
+  const screen = document.querySelector('.envelope-maincontent > .envelope-danmaku .envelope-danmaku__screen')
+  if (!screen || screen.clientHeight < 24) return
+
+  envelopeDanmakuRunning = true
+  startEnvelopeDanmaku(screen, envelopeDanmakuComments)
 }
 
 function bindEnvelopeDanmakuBounds() {
@@ -220,6 +233,33 @@ async function fetchTwikooDanmakuComments(path) {
   return []
 }
 
+function flattenWalineComments(items) {
+  const out = []
+  const walk = (list) => {
+    if (!Array.isArray(list)) return
+    list.forEach((item) => {
+      out.push(item)
+      if (Array.isArray(item.children) && item.children.length) walk(item.children)
+    })
+  }
+  walk(items)
+  return out
+}
+
+function getWalineDanmakuText(item) {
+  const fromOrig = String(item?.orig || '').trim()
+  if (fromOrig) return fromOrig
+
+  const html = String(item?.comment || '')
+  const text = stripHtml(html).trim()
+  if (text) return text
+
+  const tmp = document.createElement('div')
+  tmp.innerHTML = html
+  const emojiAlt = tmp.querySelector('img[alt]')?.getAttribute('alt')?.trim()
+  return emojiAlt || ''
+}
+
 async function fetchWalineDanmakuComments(path) {
   const serverURL = (
     document.querySelector('meta[name="sakura-waline-server"]')?.content
@@ -227,15 +267,26 @@ async function fetchWalineDanmakuComments(path) {
   ).replace(/^["']|["']$/g, '').trim()
   if (!serverURL) return []
 
+  const base = serverURL.replace(/\/+$/, '')
+  const normalizedPath = String(path || window.location.pathname || '/').replace(/\/+$/, '') || '/'
+  const query = new URLSearchParams({
+    path: normalizedPath,
+    pageSize: '50',
+    page: '1',
+    lang: 'zh-CN',
+    sortBy: 'latest',
+  })
+
   try {
-    const res = await fetch(`${serverURL}/comment?path=${encodeURIComponent(path)}&pageSize=50`)
-    const data = await res.json()
-    if (!Array.isArray(data?.data)) return []
-    return data.data.map((item) => ({
+    const res = await fetch(`${base}/api/comment?${query.toString()}`)
+    const payload = await res.json()
+    const list = payload?.data?.data
+    if (!Array.isArray(list)) return []
+    return flattenWalineComments(list).map((item) => ({
       nick: item.nick,
       avatar: item.avatar,
-      commentText: item.comment,
-    }))
+      commentText: getWalineDanmakuText(item),
+    })).filter((item) => item.commentText)
   } catch (err) {
     console.warn('[envelope-danmaku]', err)
     return []
@@ -416,9 +467,7 @@ export async function initEnvelopeDanmaku() {
     envelopeDanmakuComments = comments
   }
 
-  if (!envelopeDanmakuComments.length || envelopeDanmakuRunning) return
   syncEnvelopeDanmakuBounds()
-  if (screen.clientHeight < 24) return
-  envelopeDanmakuRunning = true
-  startEnvelopeDanmaku(screen, envelopeDanmakuComments)
+  if (!envelopeDanmakuComments.length) return
+  tryStartEnvelopeDanmaku()
 }

@@ -16,6 +16,7 @@
   --wl-comment-avatar-gap: 12px;
   --wl-reply-avatar-size: 32px;
   --wl-reply-avatar-gap: 10px;
+  --wl-comment-collapse-lines: 5;
 
   --waline-theme-color: var(--sakura-color-primary, #fe9500);
   --waline-active-color: var(--va-c-primary-dark, #e68600);
@@ -28,7 +29,8 @@
   --waline-badge-color: var(--wl-comment-badge-bg);
   --waline-info-color: var(--wl-comment-muted);
   --waline-info-bg-color: color-mix(in srgb, var(--wl-comment-muted) 12%, transparent);
-  --waline-box-shadow: none;
+  --waline-bg-color-hover: color-mix(in srgb, var(--sakura-color-primary, #fe9500) 8%, var(--wl-comment-input-bg));
+  --waline-box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
 
   * {
     box-sizing: border-box;
@@ -39,12 +41,15 @@
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 12px;
+    overflow: visible;
   }
 
   .wl-login-info {
     max-width: none;
     margin-top: 0;
     flex-shrink: 0;
+    position: relative;
+    overflow: visible;
   }
 
   .wl-avatar {
@@ -53,13 +58,27 @@
     border: none;
     border-radius: 50%;
     background: #5cb87a;
-    overflow: hidden;
+    overflow: visible;
+    position: relative;
+  }
+
+  .wl-logout-btn {
+    z-index: 2;
+    color: var(--wl-comment-muted);
+    background: var(--wl-comment-card-bg);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--wl-comment-input-border);
+
+    &:hover {
+      color: var(--sakura-color-primary, #fe9500);
+    }
   }
 
   .wl-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
   }
 
   .wl-login-nick {
@@ -74,7 +93,7 @@
     border-radius: 12px;
     background: var(--wl-comment-card-bg);
     box-shadow: none;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .wl-header {
@@ -171,8 +190,17 @@
   }
 
   .wl-footer {
+    position: relative;
+    overflow: visible;
     margin: 0 12px 12px;
     align-items: center;
+  }
+
+  .wl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
   }
 
   .wl-info .wl-text-number {
@@ -180,32 +208,141 @@
     font-size: 12px;
   }
 
-  .wl-btn {
+  .wl-footer .wl-btn {
     border-radius: 999px;
     font-size: 14px;
     padding: 0.45em 1.2em;
   }
 
-  .wl-btn.primary {
+  .wl-footer .wl-btn.primary {
     background: var(--sakura-color-primary, #fe9500);
     border-color: var(--sakura-color-primary, #fe9500);
     color: #fff;
   }
 
-  .wl-btn.primary:hover,
-  .wl-btn.primary:active {
+  .wl-footer .wl-btn.primary:hover,
+  .wl-footer .wl-btn.primary:active {
     background: var(--va-c-primary-dark, #e68600);
     border-color: var(--va-c-primary-dark, #e68600);
     color: #fff;
   }
 
   .wl-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5em;
+    height: 1.5em;
+    margin: 2px;
+    padding: 0;
+    border: none;
+    background: transparent;
     color: var(--wl-comment-muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
 
     &:hover,
     &.active {
       color: var(--sakura-color-primary, #fe9500);
     }
+  }
+
+  .wl-emoji-popup,
+  .wl-gif-popup {
+    position: absolute;
+    inset-inline-start: 0;
+    top: calc(100% + 6px);
+    z-index: 30;
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 10px;
+    background: var(--wl-comment-card-bg);
+    box-shadow: var(--waline-box-shadow);
+  }
+
+  .wl-emoji-popup.display {
+    display: block;
+  }
+
+  .wl-emoji-popup .wl-tab-wrapper {
+    max-height: 160px;
+    padding: 8px;
+  }
+
+  .wl-emoji-popup button {
+    width: 2em;
+    margin: 0.125em;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    line-height: 2;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--waline-bg-color-hover);
+    }
+  }
+
+  .wl-emoji-popup .wl-emoji {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 1.5em;
+    max-height: 1.5em;
+  }
+
+  .wl-emoji-popup .wl-emoji-preview {
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 8px;
+    background: var(--wl-comment-card-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .wl-emoji-popup .wl-tabs {
+    padding: 0 8px;
+    border-top: 1px solid var(--wl-comment-input-border);
+  }
+
+  .wl-emoji-popup .wl-tab.active {
+    border-color: var(--wl-comment-input-border);
+    background: var(--wl-comment-card-bg);
+    color: var(--sakura-color-primary, #fe9500);
+  }
+
+  .wl-gif-popup {
+    padding: 10px 10px 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  }
+
+  .wl-gif-popup.display {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .wl-gif-popup input {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 8px;
+    background: var(--wl-comment-input-bg);
+    color: var(--wl-comment-text);
+    font-size: 14px;
+    outline: none;
+
+    &:focus {
+      border-color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
+  .wl-gif-popup img {
+    border-color: var(--wl-comment-input-border);
   }
 
   /* ---------- 评论列表标题 ---------- */
@@ -306,6 +443,7 @@
   }
 
   .wl-card .wl-content {
+    position: relative;
     margin-top: 8px;
     margin-bottom: 8px;
     padding-top: 0;
@@ -313,6 +451,54 @@
     line-height: 1.7;
     color: var(--wl-comment-text);
     word-break: break-word;
+  }
+
+  .wl-card .wl-content.expand {
+    overflow: hidden;
+    max-height: calc(var(--wl-comment-collapse-lines) * 1.7em);
+    cursor: pointer;
+  }
+
+  .wl-card .wl-content.expand::before {
+    background: linear-gradient(
+      180deg,
+      transparent,
+      var(--wl-comment-card-bg)
+    );
+  }
+
+  .wl-card .wl-content.expand::after {
+    background: color-mix(in srgb, var(--wl-comment-card-bg) 92%, transparent);
+    color: var(--wl-comment-muted);
+  }
+
+  .wl-content-toggle {
+    display: block;
+    width: 100%;
+    margin: 4px 0 0;
+    padding: 4px 0 0;
+    border: none;
+    background: transparent;
+    color: var(--wl-comment-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
+  .wl-card .wl-content .wl-reply-to {
+    display: block;
+    float: none;
+    margin: 0 0 6px;
+    line-height: 1.5;
+
+    span {
+      display: none;
+    }
   }
 
   .wl-card .wl-comment-actions {
@@ -344,10 +530,83 @@
     color: var(--wl-comment-badge-bg);
   }
 
+  /* ---------- 管理员审核操作 ---------- */
+  .wl-card .wl-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 10px 0 2px;
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .wl-card .wl-comment-status {
+    display: inline-flex;
+    align-items: stretch;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px var(--wl-comment-input-border);
+  }
+
+  .wl-card .wl-comment-status .wl-btn {
+    min-width: 0;
+    margin: 0;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 0;
+    background: var(--wl-comment-input-bg);
+    color: var(--wl-comment-text);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:not(:last-child) {
+      border-inline-end: 1px solid var(--wl-comment-input-border);
+    }
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--sakura-color-primary, #fe9500) 10%, var(--wl-comment-input-bg));
+      color: var(--sakura-color-primary, #fe9500);
+    }
+
+    &:disabled {
+      background: color-mix(in srgb, var(--sakura-color-primary, #fe9500) 14%, var(--wl-comment-input-bg));
+      color: var(--sakura-color-primary, #fe9500);
+      opacity: 1;
+      cursor: default;
+    }
+  }
+
+  .wl-card .wl-admin-actions > .wl-btn.wl-sticky {
+    min-width: 0;
+    margin: 0;
+    padding: 6px 12px;
+    border: 1px solid var(--wl-comment-input-border);
+    border-radius: 8px;
+    background: var(--wl-comment-input-bg);
+    color: var(--wl-comment-text);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--sakura-color-primary, #fe9500);
+      color: var(--sakura-color-primary, #fe9500);
+    }
+  }
+
   /* 卡片内回复输入框：与 Twikoo 一致，不重复头像 */
   .wl-card > .wl-panel {
     margin-top: 12px;
     width: 100%;
+    overflow: visible;
   }
 
   /* ---------- 嵌套回复：与主评论左右对齐，不做左侧缩进 ---------- */
@@ -434,6 +693,10 @@ html.dark .sakura-waline[data-waline] {
   --waline-bg-color-light: var(--wl-comment-input-bg);
   --waline-border-color: var(--wl-comment-input-border);
   --waline-color: var(--wl-comment-text);
+
+  .wl-header input::placeholder {
+    color: var(--wl-comment-muted);
+  }
 }
 
 @media screen and (max-width: 767px) {
@@ -445,7 +708,6 @@ html.dark .sakura-waline[data-waline] {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    overflow-x: clip;
 
     --wl-comment-avatar-size: 36px;
     --wl-comment-avatar-gap: 8px;
@@ -475,6 +737,10 @@ html.dark .sakura-waline[data-waline] {
       border-bottom: 1px solid var(--wl-comment-input-border);
       padding-bottom: 2px;
       margin-bottom: 2px;
+    }
+
+    .wl-cards {
+      overflow-x: clip;
     }
 
     .wl-cards > .wl-card-item,

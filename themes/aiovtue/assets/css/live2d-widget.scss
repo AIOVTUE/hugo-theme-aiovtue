@@ -1,9 +1,10 @@
+/* left.css from waifu CDN sets #waifu { z-index: 1 } after init — keep above page overlays */
 #waifu {
-  z-index: 150;
+  z-index: 150 !important;
 }
 
 #waifu-toggle {
-  z-index: 151;
+  z-index: 151 !important;
 }
 
 html.is-excalidraw-viewport-fullscreen {

@@ -7,9 +7,29 @@ let commentMountGeneration = 0
 const walineInstances = new WeakMap()
 const walinePaths = new WeakMap()
 const walineRoots = new Set()
+const walineEnhanceObservers = new WeakMap()
+const WALINE_EXPAND_LABEL = '展开'
+const WALINE_COLLAPSE_LABEL = '收起'
+const WALINE_COLLAPSE_LINES = 5
 let walineFetchHooked = false
 const COMMENT_MOUNT_WAIT_MS = 4000
 const twikooMountPromises = new Map()
+const walineEnhanceTimers = new WeakMap()
+
+function ensureWalineJsonRefPatch() {
+  if (typeof window === 'undefined' || window.__sakuraWalineJsonRefPatch) return
+  window.__sakuraWalineJsonRefPatch = true
+
+  const nativeStringify = JSON.stringify
+  JSON.stringify = function stringifyWithRefSupport(value, replacer, space) {
+    if (value && typeof value === 'object' && value.__v_isRef === true) {
+      return nativeStringify(value.value, replacer, space)
+    }
+    return nativeStringify(value, replacer, space)
+  }
+}
+
+ensureWalineJsonRefPatch()
 
 function wait(ms) {
   return new Promise((resolve) => {
@@ -91,6 +111,117 @@ function isWalineCommentSuccess(data) {
   return false
 }
 
+function syncWalineMetaPlaceholders(root) {
+  if (!root) return
+  root.querySelectorAll('.wl-header-item').forEach((item) => {
+    const input = item.querySelector('input')
+    const label = item.querySelector('label')
+    if (!input || !label) return
+    const text = label.textContent.trim()
+    if (text) input.placeholder = text
+  })
+}
+
+function isWalineContentLong(el) {
+  const style = window.getComputedStyle(el)
+  const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.7 || 24
+  return el.scrollHeight > lineHeight * WALINE_COLLAPSE_LINES + 2
+}
+
+function setWalineContentCollapsed(el) {
+  el.classList.add('expand')
+  el.dataset.expand = WALINE_EXPAND_LABEL
+  el.dataset.sakuraExpandState = 'collapsed'
+  const toggle = el.nextElementSibling
+  if (toggle?.classList?.contains('wl-content-toggle')) toggle.remove()
+}
+
+function ensureWalineCollapseToggle(el) {
+  const existing = el.nextElementSibling
+  if (existing?.classList?.contains('wl-content-toggle')) return existing
+
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.className = 'wl-content-toggle'
+  btn.textContent = WALINE_COLLAPSE_LABEL
+  btn.addEventListener('click', (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setWalineContentCollapsed(el)
+  })
+  el.insertAdjacentElement('afterend', btn)
+  return btn
+}
+
+function setWalineContentExpanded(el) {
+  el.classList.remove('expand')
+  delete el.dataset.expand
+  el.dataset.sakuraExpandState = 'expanded'
+  ensureWalineCollapseToggle(el)
+}
+
+function applyWalineContentExpand(root) {
+  if (!root) return
+  root.querySelectorAll('.wl-card .wl-content').forEach((el) => {
+    if (el.dataset.sakuraExpandState === 'expanded') {
+      ensureWalineCollapseToggle(el)
+      return
+    }
+    if (el.dataset.sakuraExpandState === 'collapsed' || el.classList.contains('expand')) return
+    if (!isWalineContentLong(el)) return
+
+    el.dataset.sakuraExpandable = '1'
+    setWalineContentCollapsed(el)
+  })
+}
+
+function enhanceWalineRoot(root) {
+  if (!root?.isConnected) return
+  syncWalineMetaPlaceholders(root)
+  applyWalineContentExpand(root)
+}
+
+function scheduleWalineEnhance(root, delay = 0) {
+  const run = () => enhanceWalineRoot(root)
+  if (delay <= 0) {
+    run()
+    return
+  }
+  const prev = walineEnhanceTimers.get(root)
+  if (prev) clearTimeout(prev)
+  walineEnhanceTimers.set(root, window.setTimeout(() => {
+    walineEnhanceTimers.delete(root)
+    run()
+  }, delay))
+}
+
+function bindWalineEnhancements(root) {
+  if (!root || root.dataset.sakuraWalineEnhance === '1') return
+  root.dataset.sakuraWalineEnhance = '1'
+
+  root.addEventListener('click', (event) => {
+    if (event.target.closest('.wl-content-toggle, .wl-admin-actions, .wl-comment-status, .wl-comment-actions, .wl-emoji-popup, .wl-gif-popup, .wl-actions')) return
+    const content = event.target.closest('.wl-card .wl-content.expand')
+    if (!content || !root.contains(content)) return
+    if (event.target.closest('a')) return
+    setWalineContentExpanded(content)
+  })
+
+  const observer = new MutationObserver((records) => {
+    const shouldEnhance = records.some((record) => {
+      if (record.type !== 'childList') return false
+      const target = record.target
+      if (!(target instanceof Element)) return false
+      return target.closest('.wl-cards, .wl-header, .wl-comment, .wl-panel') != null
+        || record.addedNodes.length > 0
+    })
+    if (shouldEnhance) scheduleWalineEnhance(root, 120)
+  })
+  observer.observe(root, { childList: true, subtree: true })
+  walineEnhanceObservers.set(root, observer)
+  scheduleWalineEnhance(root, 0)
+}
+
 function refreshWalineInstances() {
   walineRoots.forEach((root) => {
     if (!root.isConnected) {
@@ -103,6 +234,7 @@ function refreshWalineInstances() {
     window.setTimeout(() => {
       try {
         instance.update({ path })
+        scheduleWalineEnhance(root, 350)
       } catch (_) {
         /* ignore */
       }
@@ -115,7 +247,9 @@ function isWalineCommentPost(reqUrl, method) {
   const serverURL = getWalineServerURL()
   if (!serverURL) return false
   const base = serverURL.replace(/\/+$/, '')
-  return reqUrl.startsWith(base) || reqUrl.startsWith(serverURL)
+  const apiBase = `${base}/api/`
+  if (!reqUrl.startsWith(apiBase)) return false
+  return /\/api\/comment(?:\?|$)/.test(reqUrl)
 }
 
 function ensureWalineFetchRefreshHook() {
@@ -146,6 +280,17 @@ function ensureWalineFetchRefreshHook() {
 
 function destroyWalineRoot(root) {
   if (!root) return
+  const timer = walineEnhanceTimers.get(root)
+  if (timer) {
+    clearTimeout(timer)
+    walineEnhanceTimers.delete(root)
+  }
+  const observer = walineEnhanceObservers.get(root)
+  if (observer) {
+    observer.disconnect()
+    walineEnhanceObservers.delete(root)
+  }
+  delete root.dataset.sakuraWalineEnhance
   const instance = walineInstances.get(root)
   if (instance?.destroy) {
     try {
@@ -361,10 +506,14 @@ export async function mountWaline(root, { path, placeholder = TWIKOO_COMMENT_PLA
 
   const resolvedPath = normalizeCommentPath(path)
   if (root.dataset.sakuraCommentMounted === '1' && root.dataset.sakuraCommentPath === resolvedPath) {
+    bindWalineEnhancements(root)
+    scheduleWalineEnhance(root, 100)
     return true
   }
   if (hasWalineMarkup(root) && root.dataset.sakuraCommentPath === resolvedPath) {
     root.dataset.sakuraCommentMounted = '1'
+    bindWalineEnhancements(root)
+    scheduleWalineEnhance(root, 100)
     return true
   }
 
@@ -409,6 +558,9 @@ export async function mountWaline(root, { path, placeholder = TWIKOO_COMMENT_PLA
     walineRoots.add(root)
     root.dataset.sakuraCommentMounted = '1'
     root.dataset.sakuraCommentPath = resolvedPath
+    bindWalineEnhancements(root)
+    scheduleWalineEnhance(root, 100)
+    scheduleWalineEnhance(root, 600)
     return true
   } catch (error) {
     if (generation !== commentMountGeneration || !root.isConnected) return false
