@@ -1,0 +1,67 @@
+{{- $page := .Page -}}
+{{- $index := .Index | default 0 -}}
+{{- $cover := partial "post-cover.html" $page -}}
+{{- $modifiedDate := partial "post-modified-date.html" $page -}}
+{{- $dateTime := $modifiedDate.datetime -}}
+{{- $dateOnly := $modifiedDate.dateOnly -}}
+{{- $issue := $page.Params.issue | default (add 1 $index) -}}
+{{- $isReverse := eq (mod $index 2) 1 -}}
+<article class="weekly-card weekly-card--mag{{ if $isReverse }} weekly-card--layout-b{{ else }} weekly-card--layout-a{{ end }}{{ if $page.Params.pinned }} is-pinned{{ end }}">
+  {{- partial "post-pinned-badge.html" (dict "Page" $page) -}}
+  <a class="weekly-card__link" href="{{ $page.RelPermalink }}" aria-label="阅读全文：{{ $page.Title }}">
+    {{- if not $isReverse -}}
+      {{- partial "weekly-card-date.html" (dict "Page" $page "Issue" $issue "DateTime" $dateTime "DateOnly" $dateOnly) -}}
+    {{- else -}}
+      <div class="weekly-card__media weekly-card__media--curve-right">
+        <div class="weekly-card__media-shape">
+          {{- if $cover -}}
+            {{- partial "cover-list-media.html" (dict "cover" $cover "title" $page.Title "class" "weekly-card__cover-img") -}}
+          {{- else -}}
+            <div class="weekly-card__cover-placeholder" aria-hidden="true"></div>
+          {{- end -}}
+        </div>
+      </div>
+    {{- end -}}
+    <div class="weekly-card__body">
+      <div class="weekly-card__label-row">
+        <span class="weekly-card__issue">
+          <span class="weekly-card__issue-label">ISSUE</span>
+          <span class="weekly-card__issue-num">{{ printf "%02d" (int $issue) }}</span>
+        </span>
+        <time class="weekly-card__mobile-date" datetime="{{ $dateTime }}"{{ if $dateOnly }} data-date-only="true"{{ end }}>{{ $page.Date.Format "2006.01.02" }}</time>
+      </div>
+      <h2 class="weekly-card__title">{{ $page.Title }}</h2>
+      <p class="weekly-card__excerpt">{{ partial "post-card-excerpt.html" $page }}</p>
+      <div class="weekly-card__meta-row">
+        {{- with $page.Params.tags -}}
+          <div class="weekly-card__tags">
+            {{- if reflect.IsSlice . -}}
+              {{- range first 3 . -}}
+                <span class="weekly-card__tag">{{ . }}</span>
+              {{- end -}}
+            {{- else -}}
+              <span class="weekly-card__tag">{{ . }}</span>
+            {{- end -}}
+          </div>
+        {{- else -}}
+          <div class="weekly-card__tags"></div>
+        {{- end -}}
+        <span class="weekly-card__read-more">继续阅读<iconify-icon icon="ri:arrow-right-line" class="sakura-icon" aria-hidden="true"></iconify-icon></span>
+      </div>
+    </div>
+    {{- if $isReverse -}}
+      {{- partial "weekly-card-date.html" (dict "Page" $page "Issue" $issue "DateTime" $dateTime "DateOnly" $dateOnly) -}}
+    {{- else -}}
+      <div class="weekly-card__media weekly-card__media--curve-left">
+        <div class="weekly-card__media-shape">
+          {{- if $cover -}}
+            {{- partial "cover-list-media.html" (dict "cover" $cover "title" $page.Title "class" "weekly-card__cover-img") -}}
+          {{- else -}}
+            <div class="weekly-card__cover-placeholder" aria-hidden="true"></div>
+          {{- end -}}
+        </div>
+      </div>
+    {{- end -}}
+  </a>
+  {{- partial "weekly-card-arch-stroke.html" (dict "Side" (cond $isReverse "right" "left")) -}}
+</article>

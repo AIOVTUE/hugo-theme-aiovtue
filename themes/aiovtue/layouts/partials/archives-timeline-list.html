@@ -4,7 +4,7 @@
 {{ $hidden := .Hidden | default false }}
 <div class="sakura-timeline"{{ with .Id }} id="{{ . }}"{{ end }}>
   {{ range ($pages.GroupByDate "2006") }}
-  <section class="sakura-timeline__year" data-year="{{ .Key }}">
+  <section class="sakura-timeline__year" data-year="{{ .Key }}" id="archive-year-{{ .Key }}">
     <h2>{{ .Key }}</h2>
     {{ $yearPages := partial "posts-sorted.html" (dict "Pages" .Pages) }}
     {{ range $yearPages }}

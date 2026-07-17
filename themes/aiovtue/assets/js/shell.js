@@ -1,5 +1,3 @@
-
-import { scheduleMusicPlayerInit } from './music-player.js'
 import { scheduleLive2dInit } from './live2d-widget.js'
 import { scheduleMouseStyleInit } from './tuantuanma-mouse.js'
 import {
@@ -12,8 +10,10 @@ import { openSakuraLightbox } from './lightbox.js'
 import {
   refreshHomeNavbar,
   refreshMobileNavbarCollapse,
+  refreshDesktopNavbarCollapse,
   initHomeNavbar,
   initMobileNavbarCollapse,
+  initDesktopNavbarCollapse,
   initNavbarLinkScroll,
   initNavbarDropdown,
   initBrandRotate,
@@ -21,6 +21,7 @@ import {
 import { initSidebar } from './sidebar.js'
 import { initSearchModal } from './search-modal.js'
 import {
+  getActiveHomeVariant,
   scrollToPostList,
   restoreHomeListScroll,
   shouldScrollToPostListForUrl,
@@ -133,11 +134,11 @@ export function bootShell({ mountPage, unmountPage }) {
 
   initHomeNavbar()
   initMobileNavbarCollapse()
+  initDesktopNavbarCollapse()
   initNavbarLinkScroll()
   initNavbarDropdown()
   initBrandRotate()
   initSearchModal()
-  scheduleMusicPlayerInit()
   scheduleLive2dInit()
   scheduleMouseStyleInit()
   scheduleSiteEffectsInitLazy()
@@ -151,14 +152,15 @@ export function bootShell({ mountPage, unmountPage }) {
     mountPage,
     unmountPage,
     collectHomeListScrollExtra() {
-      const timeline = document.getElementById('home-timeline-list')
+      const variant = getActiveHomeVariant()
+      const timeline = variant?.querySelector('.home-timeline-list')
       if (timeline) {
         return {
           timelineItems: timeline.querySelectorAll('.home-timeline-item').length,
           cardsItems: 0,
         }
       }
-      const cards = document.getElementById('home-cards-list')
+      const cards = variant?.querySelector('.home-cards-list')
       if (cards) {
         return {
           timelineItems: 0,
@@ -195,6 +197,7 @@ export function bootShell({ mountPage, unmountPage }) {
       }
       refreshHomeNavbar?.()
       refreshMobileNavbarCollapse?.()
+      refreshDesktopNavbarCollapse?.()
     },
   })
 }

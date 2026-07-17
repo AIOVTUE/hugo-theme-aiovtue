@@ -1,0 +1,39 @@
+{{- $pageCtx := .PageCtx -}}
+{{- $posts := .Posts -}}
+{{- $paginator := .Paginator -}}
+{{- $mobileCardsList := .MobileCardsList -}}
+{{- $isDouble := .IsDouble -}}
+{{- $hidden := .Hidden | default false -}}
+{{- $postListId := .PostListId | default false -}}
+{{- $renderPagination := .RenderPagination | default true -}}
+<div
+  class="home-layout-variant"
+  data-layout="list"
+  data-list-columns="{{ if $isDouble }}double{{ else }}single{{ end }}"
+  data-mobile-cards-list="{{ if $mobileCardsList }}true{{ else }}false{{ end }}"
+  {{- if $hidden }} hidden{{ end -}}
+>
+  <div class="home-list-layout{{ if not $isDouble }} has-sidebar{{ end }}">
+    {{- if not $isDouble -}}
+      {{- partial "home-list-sidebar.html" $pageCtx -}}
+    {{- end -}}
+    <div class="home-list-main">
+      <div class="sakura-post-list home-post-list"{{ if $postListId }} id="home-post-list"{{ end }}>
+        {{- if and .FeaturedPool (not (.SkipFeatured | default false)) -}}
+          {{- partial "home-list-featured.html" (dict "Pool" .FeaturedPool) -}}
+        {{- end -}}
+        <div class="post-list-container post-list-container--cards post-list-container--desktop-list{{ if $mobileCardsList }} post-list-container--mobile-list{{ end }}{{ if $isDouble }} is-desktop-list-double{{ end }} home-cards-list">
+          {{- range $index, $page := $paginator.Pages -}}
+            {{- partial "post-card.html" (dict "Page" $page "Site" $pageCtx.Site "Index" $index) -}}
+          {{- end -}}
+        </div>
+        {{- if $renderPagination -}}
+          {{- partial "pagination.html" $pageCtx -}}
+        {{- end -}}
+      </div>
+    </div>
+    {{- if not $isDouble -}}
+      {{- partial "home-list-random-sidebar.html" (dict "Pages" $posts) -}}
+    {{- end -}}
+  </div>
+</div>

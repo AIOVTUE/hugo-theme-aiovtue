@@ -1,0 +1,10 @@
+{{- $mc := default dict site.Params.navbar.mobileCollapse -}}
+{{- $dc := default dict site.Params.navbar.desktopCollapse -}}
+{{- $attrs := "" -}}
+{{- if $mc.enable -}}
+  {{- $attrs = printf `%s data-mobile-collapse="1" data-scroll-threshold="%v" data-scroll-delta="%v" data-reveal-mode="%s" data-mobile-collapse-home="%s"` $attrs (default 48 $mc.scrollThreshold) (default 15 $mc.scrollDelta) (default `scrollUp` $mc.revealMode) (cond (default false $mc.includeHome) "1" "0") -}}
+{{- end -}}
+{{- if $dc.enable -}}
+  {{- $attrs = printf `%s data-desktop-collapse="1" data-desktop-scroll-threshold="%v" data-desktop-scroll-delta="%v" data-desktop-reveal-mode="%s" data-desktop-collapse-home="%s"` $attrs (default 15 $dc.scrollThreshold) (default 15 $dc.scrollDelta) (default `scrollUp` $dc.revealMode) (cond (default false $dc.includeHome) "1" "0") -}}
+{{- end -}}
+{{- return $attrs -}}

@@ -1,5 +1,14 @@
-{{- $layout := .Site.Params.home.layout | default "cards" -}}
-{{- if not (in (slice "cards" "timeline") $layout) -}}{{- $layout = "cards" -}}{{- end -}}
-{{- $mobileCardsLayout := .Site.Params.home.mobileCardsLayout | default "stack" -}}
+{{- $site := .Site -}}
+{{- $layout := $site.Params.home.layout | default "cards" -}}
+{{- if isset . "HomeLayout" -}}
+  {{- $layout = .HomeLayout -}}
+{{- end -}}
+{{- if not (in (slice "cards" "timeline" "list") $layout) -}}{{- $layout = "cards" -}}{{- end -}}
+{{- $mobileCardsLayout := $site.Params.home.mobileCardsLayout -}}
+{{- if eq $layout "list" -}}
+  {{- $mobileCardsLayout = $mobileCardsLayout | default "list" -}}
+{{- else -}}
+  {{- $mobileCardsLayout = $mobileCardsLayout | default "stack" -}}
+{{- end -}}
 {{- if not (in (slice "stack" "list") $mobileCardsLayout) -}}{{- $mobileCardsLayout = "stack" -}}{{- end -}}
-{{- return (and (eq $layout "cards") (eq $mobileCardsLayout "list")) -}}
+{{- return (and (or (eq $layout "cards") (eq $layout "list")) (eq $mobileCardsLayout "list")) -}}

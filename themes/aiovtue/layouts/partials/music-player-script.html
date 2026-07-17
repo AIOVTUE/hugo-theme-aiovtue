@@ -1,0 +1,4 @@
+{{- if partial "music-enabled.html" . -}}
+  {{- $musicJs := resources.Get "js/music-player-init.js" | js.Build | minify | fingerprint -}}
+<script src="{{ $musicJs.RelPermalink }}" integrity="{{ $musicJs.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{- end -}}

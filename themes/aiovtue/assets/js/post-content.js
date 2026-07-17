@@ -2,6 +2,7 @@
 import { registerPageCleanup } from './page-cleanup.js'
 import { cancelTypeWriter, typeWriter } from './typewriter.js'
 import { appendAlbumViewerLightboxItems, initAlbumVideoThumbs } from './lightbox.js'
+import { getNavbarLayoutOffset } from './navbar.js'
 
 export function initAlbumPasswordGate() {
   const page = document.querySelector('.sakura-gallery-album-page.is-locked')
@@ -271,7 +272,7 @@ export function initPostToc() {
   const links = inner ? [...inner.querySelectorAll('#TableOfContents a[href^="#"]')] : []
   if (!aside || !inner || !links.length) return
 
-  const navHeight = () => Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sakura-navbar-height'), 10) || 65
+  const navHeight = () => getNavbarLayoutOffset()
 
   const headings = links.map((link) => {
     const id = decodeURIComponent(link.getAttribute('href').slice(1))

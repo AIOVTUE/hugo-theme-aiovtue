@@ -1,0 +1,64 @@
+{{ define "main" }}
+{{- $followHome := .Site.Params.weekly.followHome | default true -}}
+{{- $cardsPagingConfig := partial "home-cards-paging-config.html" (dict "Site" .Site "WeeklyFollowHome" $followHome) -}}
+{{- $cardsPaging := $cardsPagingConfig.Paging -}}
+{{- $cardsBatchSize := $cardsPagingConfig.BatchSize -}}
+{{- $loadMore := eq $cardsPaging "loadMore" -}}
+{{- $pages := .RegularPages -}}
+{{- if not $pages -}}
+  {{- $pages = .Pages -}}
+{{- end -}}
+{{- if not $pages -}}
+  {{- $pages = where .Site.RegularPages "RelPermalink" "hasPrefix" "/posts/weekly/" -}}
+{{- end -}}
+{{- $pages = partial "posts-sorted.html" (dict "Pages" $pages) -}}
+{{- $paginator := .Paginate $pages $cardsBatchSize -}}
+<article class="sakura-page sakura-weekly-page">
+  <div class="sakura-page-content">
+    <header class="weekly-masthead" aria-label="周刊版头">
+      <div class="weekly-masthead__rule weekly-masthead__rule--top" aria-hidden="true"></div>
+      <h2 class="weekly-masthead__title">{{ .Title }}</h2>
+      {{- if $pages -}}
+        <div class="weekly-masthead__meta">
+          <span class="weekly-masthead__stat">共 {{ len $pages }} 期</span>
+          <span class="weekly-masthead__stat">最新 {{ (index $pages 0).Date.Format "2006.01.02" }}</span>
+        </div>
+      {{- end -}}
+      <div class="weekly-masthead__rule weekly-masthead__rule--bottom" aria-hidden="true"></div>
+    </header>
+    {{- if not $pages -}}
+      <p class="weekly-empty">暂无周刊，请在 <code>content/posts/weekly/</code> 下创建文章。</p>
+    {{- else -}}
+      <div
+        class="weekly-posts"
+        id="weekly-posts"
+        data-paging="{{ $cardsPaging }}"
+        data-batch-size="{{ $cardsBatchSize }}"
+        data-paginator-page="{{ $paginator.PageNumber }}"
+      >
+        <div class="weekly-post-list" id="weekly-post-list">
+          {{- range $index, $page := $paginator.Pages -}}
+            {{- if and (eq $index 0) (eq $paginator.PageNumber 1) -}}
+              {{- partial "weekly-card-featured.html" (dict "Page" $page "Site" $.Site "Index" $index) -}}
+            {{- else -}}
+              {{- $magIndex := $index -}}
+              {{- if eq $paginator.PageNumber 1 -}}
+                {{- $magIndex = sub $index 1 -}}
+              {{- end -}}
+              {{- partial "weekly-card.html" (dict "Page" $page "Site" $.Site "Index" $magIndex) -}}
+            {{- end -}}
+          {{- end -}}
+        </div>
+        {{- partial "pagination.html" (dict "Paginator" $paginator "Anchor" "weekly-post-list") -}}
+        {{- if and $loadMore (eq $paginator.PageNumber 1) -}}
+          {{- partial "weekly-load-more.html" (dict
+            "Posts" $pages
+            "Paginator" $paginator
+            "BatchSize" $cardsBatchSize
+          ) -}}
+        {{- end -}}
+      </div>
+    {{- end -}}
+  </div>
+</article>
+{{ end }}

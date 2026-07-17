@@ -1,0 +1,41 @@
+{{- $pageCtx := .PageCtx -}}
+{{- $posts := .Posts -}}
+{{- $paginator := .Paginator -}}
+{{- $cardsLoadMore := .CardsLoadMore -}}
+{{- $cardsBatchSize := .CardsBatchSize -}}
+{{- if and $cardsLoadMore (eq $paginator.PageNumber 1) -}}
+  {{- $remaining := after (len $paginator.Pages) $posts -}}
+  {{- if $remaining -}}
+    {{- $morePosts := slice -}}
+    {{- range $index, $post := $remaining -}}
+      {{- $modifiedDate := partial "post-modified-date.html" $post -}}
+      {{- $cover := partial "post-cover.html" $post -}}
+      {{- $coverSrc := $cover -}}
+      {{- if and $cover (not (or (hasPrefix $cover "http://") (hasPrefix $cover "https://") (hasPrefix $cover "//"))) -}}
+        {{- $coverSrc = $cover | relURL -}}
+      {{- end -}}
+      {{- $lower := lower $cover -}}
+      {{- $cats := $post.Params.categories | default slice -}}
+      {{- if and $cats (not (reflect.IsSlice $cats)) -}}{{- $cats = slice $cats -}}{{- end -}}
+      {{- $tags := $post.Params.tags | default slice -}}
+      {{- if and $tags (not (reflect.IsSlice $tags)) -}}{{- $tags = slice $tags -}}{{- end -}}
+      {{- $morePosts = $morePosts | append (dict
+        "title" $post.Title
+        "url" $post.RelPermalink
+        "date" $modifiedDate.display
+        "dateTime" $modifiedDate.datetime
+        "dateOnly" $modifiedDate.dateOnly
+        "cover" $coverSrc
+        "coverIsVideo" (or (hasSuffix $lower ".mp4") (hasSuffix $lower ".webm") (hasSuffix $lower ".ogg"))
+        "categories" $cats
+        "tags" $tags
+        "excerpt" (partial "post-card-excerpt.html" $post)
+        "pinned" (default false $post.Params.pinned)
+        "index" (add (len $paginator.Pages) $index)
+      ) -}}
+    {{- end -}}
+    <script type="application/json" id="home-cards-more-data" class="home-cards-more-data">{{ $morePosts | jsonify }}</script>
+    <div class="home-cards-scroll-sentinel" id="home-cards-scroll-sentinel" data-batch-size="{{ $cardsBatchSize }}" aria-hidden="true"></div>
+    <p class="home-cards-load-status" id="home-cards-load-status" hidden aria-live="polite"></p>
+  {{- end -}}
+{{- end -}}

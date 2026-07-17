@@ -1,0 +1,767 @@
+.sakura-weekly-page {
+  --weekly-paper: var(--sakura-color-background);
+  --weekly-ink: var(--sakura-color-text-deep);
+  --weekly-muted: var(--sakura-color-text-muted);
+  --weekly-accent: var(--sakura-color-primary);
+  --weekly-rule: color-mix(in srgb, var(--sakura-color-text) 14%, transparent);
+  --weekly-accent-a: #d65757;
+  --weekly-accent-b: #607d96;
+
+  .sakura-page-content {
+    width: 100%;
+    max-width: calc(var(--sakura-content-max-width) + 80px);
+    margin-inline: auto;
+    padding: calc(var(--sakura-navbar-layout-offset) + 20px) var(--sakura-content-padding-x) 56px;
+    box-sizing: border-box;
+  }
+}
+
+html.dark .sakura-weekly-page {
+  --weekly-accent-a: #e07070;
+  --weekly-accent-b: #7a9ab3;
+}
+
+.weekly-empty {
+  margin: 0;
+  padding: 1.2rem 1.25rem;
+  border: 1px dashed var(--sakura-color-divider);
+  color: var(--weekly-muted);
+  line-height: 1.7;
+}
+
+.weekly-masthead {
+  margin: 0 0 20px;
+  padding: 14px 16px 12px;
+  text-align: center;
+  background: transparent;
+}
+
+.weekly-masthead__rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--weekly-rule) 12%,
+    var(--weekly-accent) 50%,
+    var(--weekly-rule) 88%,
+    transparent
+  );
+
+  &--top { margin-bottom: 10px; }
+  &--bottom { margin-top: 10px; }
+}
+
+.weekly-masthead__title {
+  margin: 0;
+  font-family: var(--va-font-serif);
+  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--weekly-ink);
+}
+
+.weekly-masthead__meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 8px;
+}
+
+.weekly-masthead__stat {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--weekly-muted);
+
+  &::before {
+    content: "◆";
+    margin-right: 6px;
+    color: var(--weekly-accent);
+    font-size: 0.55rem;
+  }
+}
+
+.weekly-post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Magazine card ──
+.weekly-card {
+  position: relative;
+}
+
+.weekly-card > .sakura-post-pin {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 5;
+  margin: 0;
+  width: auto;
+  height: auto;
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+
+  iconify-icon {
+    font-size: 18px;
+  }
+}
+
+.weekly-card--mag {
+  --weekly-card-accent: var(--weekly-accent-a);
+  --weekly-arch-r: clamp(24px, 4vw, 38px);
+  --weekly-arch-stroke-width: 1.4px;
+  --weekly-arch-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M 8 0 C 3 20 0 34 0 50 C 0 66 3 80 10 100 L 100 100 L 100 0 Z' fill='%23000'/%3E%3C/svg%3E");
+  --weekly-arch-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M 0 0 L 0 100 L 90 100 C 97 80 100 66 100 50 C 100 34 97 20 92 0 Z' fill='%23000'/%3E%3C/svg%3E");
+  min-height: 220px;
+  background: #fff;
+  border: 1px solid var(--weekly-rule);
+  box-shadow: none;
+  overflow: hidden;
+  transition: transform 0.24s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &.is-pinned {
+    box-shadow: inset 4px 0 0 var(--weekly-card-accent);
+  }
+}
+
+html.dark .weekly-card--mag {
+  background: color-mix(in srgb, var(--sakura-color-background) 92%, #fff);
+}
+
+.weekly-card--layout-a {
+  --weekly-media-width: max(200px, 36%);
+}
+
+.weekly-card--layout-b {
+  --weekly-card-accent: var(--weekly-accent-b);
+  --weekly-media-width: max(200px, 36%);
+}
+
+// ── Featured latest issue card ──
+.weekly-card--featured {
+  --weekly-card-accent: var(--weekly-accent-a);
+  min-height: 200px;
+  background: #fff;
+  border: 1px solid var(--weekly-rule);
+  box-shadow: none;
+  overflow: hidden;
+  transition: transform 0.24s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &.is-pinned {
+    box-shadow: inset 4px 0 0 var(--weekly-card-accent);
+  }
+
+  .weekly-card__link {
+    grid-template-columns: minmax(240px, 40%) minmax(0, 1fr);
+    grid-template-areas: "media body";
+    min-height: 200px;
+  }
+
+  .weekly-card__body {
+    gap: 8px;
+    padding: 20px 24px;
+  }
+
+  .weekly-card__label-row--featured {
+    margin-bottom: 0;
+    padding-bottom: 8px;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .weekly-card__featured-date {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--weekly-muted);
+  }
+
+  .weekly-card__title--featured {
+    font-size: clamp(1.1rem, 2.2vw, 1.42rem);
+    line-height: 1.4;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--weekly-card-accent);
+      }
+    }
+  }
+
+  .weekly-card__content--featured {
+    position: relative;
+    max-height: clamp(110px, 16vw, 180px);
+    overflow: hidden;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 36px;
+      background: linear-gradient(to bottom, transparent, #fff);
+      pointer-events: none;
+    }
+
+    .markdown-body {
+      font-size: 0.82rem;
+      line-height: 1.68;
+      color: var(--weekly-muted);
+    }
+
+    .markdown-body > :first-child {
+      margin-top: 0;
+    }
+
+    .markdown-body h2,
+    .markdown-body h3 {
+      margin: 0.55em 0 0.35em;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--weekly-ink);
+    }
+
+    .markdown-body ul,
+    .markdown-body ol {
+      margin: 0.45em 0;
+      padding-left: 1.2em;
+    }
+
+    .markdown-body li + li {
+      margin-top: 0.25em;
+    }
+
+    .markdown-body a {
+      color: var(--weekly-card-accent);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  a.weekly-card__read-more {
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.82;
+    }
+  }
+
+  .weekly-card__media--rect {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    margin: 0;
+    width: 100%;
+    min-height: 200px;
+
+    .weekly-card__media-shape {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+}
+
+html.dark .weekly-card--featured {
+  background: color-mix(in srgb, var(--sakura-color-background) 92%, #fff);
+
+  .weekly-card__content--featured::after {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--sakura-color-background) 92%, #fff)
+    );
+  }
+}
+
+.weekly-card__link {
+  display: grid;
+  align-items: stretch;
+  min-height: 220px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.weekly-card--layout-a .weekly-card__link {
+  grid-template-columns: 148px minmax(0, 1fr) minmax(200px, 36%);
+  grid-template-areas: "date body media";
+}
+
+.weekly-card--layout-b .weekly-card__link {
+  grid-template-columns: minmax(200px, 36%) minmax(0, 1fr) 148px;
+  grid-template-areas: "media body date";
+}
+
+.weekly-mag-date {
+  grid-area: date;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 14px;
+  line-height: 1.1;
+}
+
+.weekly-mag-date__time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.weekly-mag-date--light {
+  background: transparent;
+  color: var(--weekly-ink);
+}
+
+.weekly-card--layout-a .weekly-mag-date::after {
+  content: "";
+  position: absolute;
+  top: 28px;
+  right: 0;
+  bottom: 28px;
+  width: 0;
+  border-right: 1px dashed color-mix(in srgb, var(--weekly-card-accent) 28%, var(--weekly-rule));
+}
+
+.weekly-card--layout-b .weekly-mag-date::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: 0;
+  bottom: 28px;
+  width: 0;
+  border-left: 1px dashed color-mix(in srgb, var(--weekly-card-accent) 28%, var(--weekly-rule));
+}
+
+.weekly-mag-date__brand {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--weekly-muted);
+  margin-bottom: 10px;
+}
+
+.weekly-mag-date__issue-num {
+  font-family: var(--va-font-serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--weekly-card-accent);
+}
+
+.weekly-mag-date__issue-label {
+  margin-top: 2px;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  color: var(--weekly-muted);
+}
+
+.weekly-mag-date__year-bar {
+  width: 100%;
+  margin-top: 12px;
+  padding: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--weekly-card-accent);
+  background: transparent;
+}
+
+.weekly-mag-date__day-num {
+  margin-top: 10px;
+  font-family: var(--va-font-serif);
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--weekly-ink);
+}
+
+.weekly-mag-date__weekday {
+  margin-top: 8px;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--weekly-muted);
+
+  span {
+    display: block;
+    margin-top: 2px;
+    letter-spacing: 0.16em;
+  }
+}
+
+.weekly-card__body {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 22px 24px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.weekly-card--layout-a .weekly-card__body {
+  padding-right: calc(24px + var(--weekly-arch-r) * 1.4 + 16px);
+}
+
+.weekly-card--layout-b .weekly-card__body {
+  padding-left: calc(24px + var(--weekly-arch-r) * 1.4 + 16px);
+}
+
+html.dark .weekly-card__body {
+  background: transparent;
+}
+
+.weekly-card__label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--weekly-card-accent) 24%, var(--weekly-rule));
+}
+
+.weekly-card__mobile-date {
+  display: none;
+}
+
+.weekly-card__badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--weekly-card-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--weekly-card-accent) 38%, transparent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--weekly-card-accent);
+}
+
+.weekly-card__issue {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  font-family: var(--va-font-serif);
+  line-height: 1;
+}
+
+.weekly-card__issue-label {
+  font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  color: var(--weekly-card-accent);
+}
+
+.weekly-card__issue-num {
+  font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--weekly-card-accent);
+}
+
+.weekly-card__title {
+  margin: 0;
+  font-family: var(--va-font-serif);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--weekly-ink);
+}
+
+.weekly-card__excerpt {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.72;
+  color: var(--weekly-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.weekly-card__meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.weekly-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.weekly-card__tag {
+  font-size: 0.72rem;
+  color: var(--weekly-muted);
+}
+
+.weekly-card__read-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 0.82rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--weekly-card-accent);
+
+  iconify-icon {
+    width: 1em;
+    height: 1em;
+    font-size: 1em;
+    color: inherit;
+  }
+}
+
+.weekly-card__media {
+  grid-area: media;
+  position: relative;
+  align-self: stretch;
+  min-height: 220px;
+  box-sizing: border-box;
+}
+
+.weekly-card__media-shape {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: transparent;
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.weekly-card__media--curve-left {
+  margin-left: calc(-1 * var(--weekly-arch-r) * 0.88);
+  width: calc(100% + var(--weekly-arch-r) * 0.88);
+
+  .weekly-card__media-shape {
+    -webkit-mask-image: var(--weekly-arch-mask-left);
+    mask-image: var(--weekly-arch-mask-left);
+  }
+}
+
+.weekly-card__media--curve-right {
+  margin-right: calc(-1 * var(--weekly-arch-r) * 0.88);
+  width: calc(100% + var(--weekly-arch-r) * 0.88);
+
+  .weekly-card__media-shape {
+    -webkit-mask-image: var(--weekly-arch-mask-right);
+    mask-image: var(--weekly-arch-mask-right);
+  }
+}
+
+.weekly-card__arch-stroke {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  width: calc(var(--weekly-media-width) + var(--weekly-arch-r) * 0.88);
+  color: var(--weekly-card-accent);
+  pointer-events: none;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  path {
+    stroke-width: var(--weekly-arch-stroke-width);
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+.weekly-card--layout-a .weekly-card__arch-stroke--left {
+  right: -1px;
+  width: calc(var(--weekly-media-width) + var(--weekly-arch-r) * 0.88 + 1px);
+}
+
+.weekly-card--layout-b .weekly-card__arch-stroke--right {
+  left: -1px;
+  width: calc(var(--weekly-media-width) + var(--weekly-arch-r) * 0.88 + 1px);
+}
+
+.weekly-card--layout-a .weekly-card__media--curve-left {
+  margin-right: -1px;
+  width: calc(100% + var(--weekly-arch-r) * 0.88 + 1px);
+}
+
+.weekly-card--layout-b .weekly-card__media--curve-right {
+  margin-left: -1px;
+  width: calc(100% + var(--weekly-arch-r) * 0.88 + 1px);
+}
+
+.weekly-card__cover-img,
+.weekly-card__media-shape img,
+.weekly-card__media-shape video,
+.weekly-card__media img,
+.weekly-card__media video {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.weekly-card:hover .weekly-card__cover-img,
+.weekly-card:hover .weekly-card__media img,
+.weekly-card:hover .weekly-card__media video {
+  transform: scale(1.03);
+}
+
+.weekly-card:hover .weekly-card__media--curve-left .weekly-card__cover-img,
+.weekly-card:hover .weekly-card__media--curve-left img,
+.weekly-card:hover .weekly-card__media--curve-left video,
+.weekly-card:hover .weekly-card__media--curve-right .weekly-card__cover-img,
+.weekly-card:hover .weekly-card__media--curve-right img,
+.weekly-card:hover .weekly-card__media--curve-right video {
+  transform: none;
+}
+
+.weekly-card__cover-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--weekly-card-accent) 12%, transparent), transparent),
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--weekly-ink) 5%, transparent) 0 1px,
+      transparent 1px 14px
+    );
+}
+
+.weekly-posts .sakura-pagination-standard {
+  margin-top: 32px;
+}
+
+.weekly-load-status {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--weekly-muted);
+
+  &.is-loading {
+    color: var(--weekly-accent);
+  }
+}
+
+@media (max-width: 900px) {
+  .weekly-card--featured .weekly-card__link {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "media"
+      "body";
+    min-height: 0;
+  }
+
+  .weekly-card--featured .weekly-card__media--rect {
+    min-height: 180px;
+  }
+
+  .weekly-card--featured .weekly-card__body {
+    padding: 16px;
+  }
+
+  .weekly-card--featured .weekly-card__content--featured {
+    max-height: 140px;
+  }
+
+  .weekly-card--layout-a .weekly-card__link,
+  .weekly-card--layout-b .weekly-card__link {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "media"
+      "body";
+    min-height: 0;
+  }
+
+  .weekly-mag-date--light,
+  .weekly-card--layout-a .weekly-mag-date,
+  .weekly-card--layout-b .weekly-mag-date {
+    display: none;
+  }
+
+  .weekly-card--mag .weekly-card__label-row {
+    justify-content: space-between;
+  }
+
+  .weekly-card__mobile-date {
+    display: block;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--weekly-muted);
+  }
+
+  .weekly-card__media {
+    min-height: 200px;
+  }
+
+  .weekly-card__media--curve-left,
+  .weekly-card__media--curve-right {
+    margin: 0;
+    width: 100%;
+
+    .weekly-card__media-shape {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+
+  .weekly-card__arch-stroke {
+    display: none;
+  }
+
+  .weekly-card--layout-a .weekly-card__body,
+  .weekly-card--layout-b .weekly-card__body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .weekly-card__body {
+    padding: 18px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .weekly-posts[data-paging="loadMore"][data-paginator-page="1"] .sakura-pagination-standard {
+    display: none;
+  }
+
+  .weekly-masthead {
+    padding: 12px 16px 10px;
+  }
+
+  .weekly-masthead__title {
+    letter-spacing: 0.12em;
+  }
+}

@@ -1,9 +1,9 @@
 
-import { cleanupPageComments, initPageComments } from './comments.js'
+import { cleanupPageComments, initPageComments, initTwikooVisitors } from './comments.js'
 import { runPageCleanups } from './page-cleanup.js'
 import { bootShell, bindCopyYmlBtn } from './shell.js'
 import { updateSidebarNavActive } from './sidebar.js'
-import { refreshHomeNavbar, refreshMobileNavbarCollapse } from './navbar.js'
+import { refreshHomeNavbar, refreshMobileNavbarCollapse, refreshDesktopNavbarCollapse } from './navbar.js'
 import { bindHeroScrollDown, initHeroMedia, initHeroHitokoto, cleanupHero } from './hero.js'
 import { initLazyImages } from './lazy-images.js'
 import {
@@ -17,10 +17,16 @@ import {
 import { initNoticeBoard } from './notice-board.js'
 import { initSiteRuntime } from './site-runtime.js'
 import {
+  initHomeLayoutRandom,
   initHomePaginationScroll,
   initHomePostListScrollAnimation,
   initHomeTimelineLoadMore,
   initHomeCardsLoadMore,
+  bootstrapHomeCardsLoadMore,
+  scheduleHomeCardsLoadMoreSync,
+  initHomeListFeatured,
+  initHomeListRandomSidebar,
+  initHomeListArchiveHeatmap,
   refreshMobileCardsListPage,
   cleanupHomeObservers,
 } from './home.js'
@@ -32,7 +38,9 @@ import { initMomentsModule, initExcalidrawModule, initGalleryPostModule } from '
 import { isPjaxContentMounting } from './page-nav.js'
 import { initSearchPage } from './search-page.js'
 import { initEnvelope, initEnvelopeDanmaku } from './envelope.js'
+import { initWeeklyLoadMore, bootstrapWeeklyLoadMore } from './weekly.js'
 import { cancelTypeWriter } from './typewriter.js'
+import { bootSignatureWidget } from './signature-boot.js'
 
 function unmountPage() {
   runPageCleanups()
@@ -46,6 +54,7 @@ function unmountPage() {
   cancelTypeWriter()
   refreshHomeNavbar?.()
   refreshMobileNavbarCollapse?.()
+  refreshDesktopNavbarCollapse?.()
 }
 
 function mountPage() {
@@ -58,11 +67,17 @@ function mountPage() {
   bindHeroScrollDown()
   initNoticeBoard()
   initSiteRuntime()
+  initHomeLayoutRandom()
   initHomePaginationScroll()
   initHomePostListScrollAnimation()
   initHomeTimelineLoadMore()
-  initHomeCardsLoadMore()
+  initHomeListFeatured()
+  initHomeListRandomSidebar()
+  initHomeListArchiveHeatmap()
   refreshMobileCardsListPage()
+  initHomeCardsLoadMore()
+  scheduleHomeCardsLoadMoreSync()
+  initWeeklyLoadMore()
   initPostToc()
   initPageComments({
     onTwikooReady: () => {
@@ -70,6 +85,7 @@ function mountPage() {
       observeTwikooCommentForm()
     },
   })
+  initTwikooVisitors()
   initAlbumPasswordGate()
   initPostImageRows()
   initPostAiSummary()
@@ -87,13 +103,19 @@ function mountPage() {
   void initSearchPage().catch((err) => console.warn('[search]', err))
   initEnvelope()
   initEnvelopeDanmaku()
-  window.SignatureWidget?.boot()
+  void bootSignatureWidget().catch((err) => console.warn('[signature]', err))
   bindCopyYmlBtn()
   refreshHomeNavbar?.()
   refreshMobileNavbarCollapse?.()
+  refreshDesktopNavbarCollapse?.()
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   bootShell({ mountPage, unmountPage })
   mountPage()
 })
+
+window.addEventListener('load', () => {
+  bootstrapHomeCardsLoadMore()
+  bootstrapWeeklyLoadMore()
+}, { once: true })

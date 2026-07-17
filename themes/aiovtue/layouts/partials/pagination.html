@@ -1,4 +1,9 @@
-{{ $paginator := .Paginator }}
+{{- $paginator := .Paginator -}}
+{{- $anchor := "home-post-list" -}}
+{{- if reflect.IsMap . -}}
+  {{- $paginator = index . "Paginator" -}}
+  {{- with index . "Anchor" -}}{{- $anchor = . -}}{{- end -}}
+{{- end -}}
 {{ if gt $paginator.TotalPages 1 }}
   {{ $cur := $paginator.PageNumber }}
   {{ $total := $paginator.TotalPages }}
@@ -7,7 +12,7 @@
   <nav class="sakura-pagination-standard" aria-label="分页">
     <div class="pagination">
       {{ if gt $cur 1 }}
-      <a class="page-number" href="{{ $paginator.Prev.URL }}#home-post-list" aria-label="上一页">
+      <a class="page-number" href="{{ $paginator.Prev.URL }}#{{ $anchor }}" aria-label="上一页">
         <iconify-icon icon="ri:arrow-left-s-line" aria-hidden="true"></iconify-icon>
       </a>
       {{ end }}
@@ -17,7 +22,7 @@
           {{ if eq $p $cur }}
           <span class="page-number active" aria-current="page">{{ $p }}</span>
           {{ else }}
-          <a class="page-number" href="{{ (index $paginator.Pagers (sub $p 1)).URL }}#home-post-list">{{ $p }}</a>
+          <a class="page-number" href="{{ (index $paginator.Pagers (sub $p 1)).URL }}#{{ $anchor }}">{{ $p }}</a>
           {{ end }}
         {{ else if eq $p (sub $cur $window) }}
         <span class="space" aria-hidden="true">...</span>
@@ -26,7 +31,7 @@
         {{ end }}
       {{ end }}
       {{ if lt $cur $total }}
-      <a class="page-number" href="{{ $paginator.Next.URL }}#home-post-list" aria-label="下一页">
+      <a class="page-number" href="{{ $paginator.Next.URL }}#{{ $anchor }}" aria-label="下一页">
         <iconify-icon icon="ri:arrow-right-s-line" aria-hidden="true"></iconify-icon>
       </a>
       {{ end }}

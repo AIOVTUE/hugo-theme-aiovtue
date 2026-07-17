@@ -1,0 +1,44 @@
+{{- $posts := where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") -}}
+<div class="home-list-sidebar-card home-list-sidebar-site-info">
+  <a href="{{ `/about/` | relLangURL }}" class="home-list-sidebar-site-info__avatar">
+    <img src="{{ .Site.Params.author.avatar | relURL }}" alt="{{ .Site.Params.author.name }}" width="96" height="96" loading="lazy">
+  </a>
+  <p class="home-list-sidebar-site-info__name">
+    <a href="{{ `/about/` | relLangURL }}">{{ .Site.Params.author.name }}</a>
+  </p>
+  <p class="home-list-sidebar-site-info__subtitle">{{ .Site.Title }}</p>
+  <p class="home-list-sidebar-site-info__desc">{{ .Site.Params.description }}</p>
+  <div class="home-list-sidebar-site-info__stats">
+    <a class="home-list-sidebar-site-info__stat" href="{{ `/archives/` | relLangURL }}">
+      <span class="home-list-sidebar-site-info__stat-value">{{ len $posts }}</span>
+      <span class="home-list-sidebar-site-info__stat-label">文章</span>
+    </a>
+    <a class="home-list-sidebar-site-info__stat" href="{{ `/categories/` | relLangURL }}">
+      <span class="home-list-sidebar-site-info__stat-value">{{ len .Site.Taxonomies.categories }}</span>
+      <span class="home-list-sidebar-site-info__stat-label">分类</span>
+    </a>
+    <a class="home-list-sidebar-site-info__stat" href="{{ `/tags/` | relLangURL }}">
+      {{- $tagItems := partial "posts-tag-items.html" . -}}
+      <span class="home-list-sidebar-site-info__stat-value">{{ len $tagItems }}</span>
+      <span class="home-list-sidebar-site-info__stat-label">标签</span>
+    </a>
+  </div>
+  {{- if .Site.Params.social -}}
+  <div class="home-list-sidebar-site-info__socials links-of-author">
+    {{- range .Site.Params.social -}}
+    <a
+      class="home-list-sidebar-site-info__social links-of-author-item"
+      href="{{ if or (hasPrefix .link `http`) (hasPrefix .link `mailto:`) }}{{ .link }}{{ else }}{{ .link | relURL }}{{ end }}"
+      title="{{ .name }}"
+      target="_blank"
+      rel="noopener"
+      {{ with .color }}style="color: {{ . }};"{{ end }}
+    >
+      {{- with .icon -}}
+      {{ printf `<iconify-icon icon="%s" class="links-of-author-item__icon" aria-hidden="true"></iconify-icon>` . | safeHTML }}
+      {{- end -}}
+    </a>
+    {{- end -}}
+  </div>
+  {{- end -}}
+</div>

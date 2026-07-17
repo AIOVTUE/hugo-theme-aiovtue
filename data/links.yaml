@@ -41,6 +41,7 @@ linkGroups:
         
   - name: 推荐网站
     desc: 这里是最熟悉的小伙伴（位置不限量哦~）
+    type: simple
     links:
       # 占位友链，可替换为真实申请者的信息          
       

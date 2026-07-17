@@ -1,0 +1,33 @@
+{{- $pool := .Pool -}}
+{{- if not $pool -}}{{- return -}}{{- end -}}
+{{- $visible := site.Params.home.featuredCount | default 4 -}}
+{{- if lt $visible 1 -}}{{- $visible = 4 -}}{{- end -}}
+{{- $mobileVisible := site.Params.home.featuredMobileCount | default 2 -}}
+{{- if lt $mobileVisible 1 -}}{{- $mobileVisible = 2 -}}{{- end -}}
+{{- $featuredTitle := site.Params.home.featuredTitle | default "要去这些文章看看吗" -}}
+{{- $showNav := or (gt (len $pool) $visible) (gt (len $pool) $mobileVisible) -}}
+<section class="home-list-featured" aria-label="推荐文章" style="--home-list-featured-visible-desktop: {{ $visible }}; --home-list-featured-visible-mobile: {{ $mobileVisible }};">
+  <div class="home-list-featured__inner">
+    <div class="home-list-featured__header">
+      <h2 class="home-list-featured__heading">
+        <iconify-icon icon="mdi:star-outline" class="sakura-icon home-list-featured__heading-icon" aria-hidden="true"></iconify-icon>
+        {{ $featuredTitle }}
+      </h2>
+      <div class="home-list-featured__navs"{{ if not $showNav }} hidden{{ end }}>
+        <button type="button" class="home-list-featured__nav home-list-featured__nav--prev" aria-label="上一组文章">
+          <iconify-icon icon="mdi:chevron-left" class="sakura-icon" aria-hidden="true"></iconify-icon>
+        </button>
+        <button type="button" class="home-list-featured__nav home-list-featured__nav--next" aria-label="下一组文章">
+          <iconify-icon icon="mdi:chevron-right" class="sakura-icon" aria-hidden="true"></iconify-icon>
+        </button>
+      </div>
+    </div>
+    <div class="home-list-featured__viewport">
+      <div class="home-list-featured__track home-list-featured-track">
+        {{- range $pool -}}
+          {{- partial "home-list-featured-card.html" (dict "Page" .) -}}
+        {{- end -}}
+      </div>
+    </div>
+  </div>
+</section>

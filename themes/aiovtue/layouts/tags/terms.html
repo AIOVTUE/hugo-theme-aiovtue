@@ -3,21 +3,11 @@
 {{ $posts = partial "posts-sorted.html" (dict "Pages" $posts) }}
 {{ $limit := .Site.Params.charts.tagsChartLength | default 10 }}
 {{ $homeLayout := .Site.Params.home.layout | default "cards" }}
-{{ if not (in (slice "cards" "timeline") $homeLayout) }}{{ $homeLayout = "cards" }}{{ end }}
+{{ if not (in (slice "cards" "timeline" "list") $homeLayout) }}{{ $homeLayout = "cards" }}{{ end }}
 {{ $listArchives := eq $homeLayout "timeline" }}
-{{ $mobileCardsList := partial "mobile-cards-list-enabled.html" . }}
-{{ $tagItems := slice }}
-{{ range .Data.Terms.ByCount }}
-  {{ $postCount := 0 }}
-  {{ range .Pages }}
-    {{ if in (slice "posts" "excalidraw") .Section }}{{ $postCount = add $postCount 1 }}{{ end }}
-  {{ end }}
-  {{ if gt $postCount 0 }}
-    {{ $tagItems = $tagItems | append (dict "name" .Page.Title "count" $postCount "term" .Term) }}
-  {{ end }}
-{{ end }}
-{{ $tagItems = sort $tagItems "count" "desc" }}
-<article class="sakura-page sakura-taxonomy-page sakura-tags-page{{ if $listArchives }} is-list-archives{{ end }}{{ if $mobileCardsList }} is-mobile-cards-list{{ end }}">
+{{ $mobileCardsList := partial "mobile-cards-list-enabled.html" (dict "Site" .Site) }}
+{{ $tagItems := partial "posts-tag-items.html" . }}
+<article class="sakura-page sakura-taxonomy-page sakura-tags-page{{ if $listArchives }} is-list-archives{{ end }}{{ if eq $homeLayout "list" }} is-layout-list{{ end }}{{ if $mobileCardsList }} is-mobile-cards-list{{ end }}">
   {{- partial "page-header.html" . -}}
   <div class="sakura-page-content">
     <p class="sakura-taxonomy-count">共 {{ len $tagItems }} 个标签</p>
@@ -43,7 +33,7 @@
       ) -}}
       {{ else }}
       <div class="sakura-post-list">
-        <div class="post-list-container post-list-container--cards{{ if $mobileCardsList }} post-list-container--mobile-list{{ end }}" id="tags-post-list">
+        <div class="post-list-container post-list-container--cards{{ if eq $homeLayout "list" }} post-list-container--desktop-list{{ end }}{{ if $mobileCardsList }} post-list-container--mobile-list{{ end }}" id="tags-post-list">
           {{ range $index, $page := $posts }}
           {{ $tags := slice }}
           {{ range ($page.GetTerms "tags") }}

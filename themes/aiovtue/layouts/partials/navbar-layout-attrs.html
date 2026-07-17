@@ -1,0 +1,18 @@
+{{- $dc := default dict site.Params.navbar.desktopCollapse -}}
+{{- $mc := default dict site.Params.navbar.mobileCollapse -}}
+{{- $swp := default dict site.Params.navbar.scrollWithPage -}}
+{{- $swpEnable := default false $swp.enable -}}
+{{- $swpIncludeHome := default false $swp.includeHome -}}
+{{- $desktopScrollWithPage := and $swpEnable (not (default false $dc.enable)) -}}
+{{- $mobileScrollWithPage := and $swpEnable (not (default false $mc.enable)) -}}
+{{- $attrs := "" -}}
+{{- if $desktopScrollWithPage -}}
+  {{- $attrs = printf `%s data-navbar-scroll-with-page-desktop="1"` $attrs -}}
+{{- end -}}
+{{- if $mobileScrollWithPage -}}
+  {{- $attrs = printf `%s data-navbar-scroll-with-page-mobile="1"` $attrs -}}
+{{- end -}}
+{{- if and $swpEnable $swpIncludeHome -}}
+  {{- $attrs = printf `%s data-navbar-scroll-with-page-home="1"` $attrs -}}
+{{- end -}}
+{{- return $attrs -}}

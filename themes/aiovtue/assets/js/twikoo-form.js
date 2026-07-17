@@ -1,6 +1,3 @@
-
-import { TWIKOO_COMMENT_PLACEHOLDER } from './comments.js'
-
 const TWIKOO_META_PLACEHOLDERS = {
   nick: '昵称',
   mail: '邮箱',
@@ -22,10 +19,6 @@ export function customizeTwikooCommentForm() {
   document.querySelectorAll('.sakura-comment .twikoo, #tcomment').forEach((root) => {
     root.querySelectorAll('.tk-submit .tk-meta-input .el-input__inner').forEach((input) => {
       input.placeholder = TWIKOO_META_PLACEHOLDERS[input.name] ?? ''
-    })
-
-    root.querySelectorAll('.tk-submit .tk-input .el-textarea__inner').forEach((textarea) => {
-      textarea.placeholder = TWIKOO_COMMENT_PLACEHOLDER
     })
 
     hideTwikooDeleteButtons(root)

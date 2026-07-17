@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ site.Language.Lang | default `zh` }}" class="{{ if .IsHome }}is-home has-home-layout{{ else if eq .Kind `404` }}has-404-layout{{ end }}"{{- with site.Params.search -}}{{- if .enable -}} data-search-threshold="{{ default 0.35 .threshold }}"{{- end -}}{{- end -}}>
+<html lang="zh-CN" translate="no" class="notranslate{{ if .IsHome }} is-home has-home-layout{{ end }}{{ if eq (.Site.Params.hero.style | default `dot`) `grid` }} hero-style-grid{{ end }}{{ if eq .Kind `404` }} has-404-layout{{ end }}"{{ with site.Params.search }}{{ if .enable }} data-search-threshold="{{ default 0.35 .threshold }}"{{ end }}{{ end }}{{ partial "navbar-layout-attrs.html" . | safeHTMLAttr }}>
 <head>
   {{- partial "head.html" . -}}
 </head>
-<body class="{{ if default true .Site.Params.loader.enable }}sakura-loading{{ end }}">
+<body class="notranslate{{ if default true .Site.Params.loader.enable }} sakura-loading{{ end }}" translate="no">
   {{- partial "loader.html" . -}}
   {{- partial "navbar.html" . -}}
   <div id="content" class="site-content">

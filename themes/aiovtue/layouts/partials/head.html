@@ -1,4 +1,10 @@
 <meta charset="utf-8">
+<meta name="google" content="notranslate">
+{{- partial "anti-translate.html" . -}}
+{{- partial "cdn-preconnect.html" . -}}
+{{- if partial "signature-needed.html" . -}}
+<meta name="sakura-signature-script" content="{{ `/signature/signature.js` | relURL }}">
+{{- end -}}
 {{- $favicon := .Site.Params.favicon | default `/favicon.png` -}}
 <link rel="icon" href="{{ $favicon | relURL }}" type="image/png">
 {{- partial "loader-head.html" . -}}
@@ -41,7 +47,6 @@
 {{- end -}}
 {{- end -}}
 <meta property="og:locale" content="zh-CN">
-<meta property="og:locale:alternate" content="en">
 <meta property="og:site_name" content="{{ .Site.Title }}">
 <meta property="og:title" content="{{ $ogTitle }}">
 <meta property="og:description" content="{{ $desc }}">
@@ -55,10 +60,11 @@
 {{- $themeVars := resources.Get "css/theme-vars.scss" | resources.ExecuteAsTemplate "css/theme-vars.scss" . | css.Sass | minify -}}
 <style>{{ $themeVars.Content | safeCSS }}</style>
 {{- partial "post-font-size-style.html" . -}}
-{{ if .IsHome }}<style>:root{--sakura-hero-placeholder:#fafafa;--sakura-hero-placeholder-from:#f5f5f5;--sakura-hero-placeholder-to:#fff}html.dark{--sakura-hero-placeholder:#e8e8e8;--sakura-hero-placeholder-from:#ececec;--sakura-hero-placeholder-to:#e0e0e0}html.is-home,html.is-home body{background:var(--sakura-hero-placeholder)}</style>{{ end }}
+{{ if .IsHome }}<style>:root{--sakura-hero-placeholder:#fafafa;--sakura-hero-placeholder-from:#f5f5f5;--sakura-hero-placeholder-to:#fff}html.dark{--sakura-hero-placeholder:#e8e8e8;--sakura-hero-placeholder-from:#ececec;--sakura-hero-placeholder-to:#e0e0e0}html.is-home,html.is-home body{background:var(--sakura-hero-placeholder)}html.dark.is-home,html.dark.is-home body{background:#1a1a1a}</style>{{ end }}
 <link rel="stylesheet" href="{{ "fonts/lxgw-wenkai-screen/style.css" | relURL }}">
 {{ $css := resources.Get "css/main.scss" | css.Sass | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+{{- partial "hero-grid-style.html" . -}}
 {{- partial "page-styles.html" . -}}
 {{ block "head-extra" . }}{{ end }}
 {{- if or (.Store.Get "hasMath") (and .Params.math (or (eq .Section "posts") (eq .Layout "about"))) -}}

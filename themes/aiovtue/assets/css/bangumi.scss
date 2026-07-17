@@ -2,13 +2,9 @@
   --bangumi-stat-color: #f0a020;
   --bangumi-header-gap: var(--sakura-page-header-content-gap);
   width: 100%;
-  min-height: calc(100vh - var(--sakura-navbar-height));
+  min-height: calc(100vh - var(--sakura-navbar-layout-offset));
   box-sizing: border-box;
   background: var(--sakura-color-background);
-
-  .sakura-page-header {
-    margin-top: var(--sakura-navbar-height);
-  }
 
   .sakura-page-header.has-cover .sakura-page-header__text {
     color: inherit;
@@ -366,5 +362,11 @@ html.dark {
   .bangumi-card__inner {
     border-color: color-mix(in srgb, var(--sakura-color-divider) 88%, rgba(255, 255, 255, 0.1));
     background: color-mix(in srgb, var(--sakura-color-background) 96%, #fff);
+  }
+}
+
+html.hero-style-grid {
+  .sakura-bangumi-page {
+    background: transparent;
   }
 }

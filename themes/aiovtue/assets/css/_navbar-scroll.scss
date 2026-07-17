@@ -1,0 +1,53 @@
+@mixin sakura-navbar-scroll-with-page($homeOverlay: false) {
+  --sakura-navbar-layout-offset: 0px;
+
+  @if $homeOverlay {
+    body {
+      position: relative;
+    }
+  }
+
+  .sakura-navbar {
+    @if $homeOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+    } @else {
+      position: static;
+    }
+    z-index: 100;
+  }
+
+  @if $homeOverlay {
+    .sakura-hero {
+      height: 100svh;
+      margin-top: 0;
+    }
+
+    .sakura-hero__media.hero-style::before {
+      background-attachment: scroll;
+    }
+  }
+}
+
+@media (min-width: 769px) {
+  html[data-navbar-scroll-with-page-desktop="1"]:not(.is-home) {
+    @include sakura-navbar-scroll-with-page(false);
+  }
+
+  html[data-navbar-scroll-with-page-desktop="1"][data-navbar-scroll-with-page-home="1"].is-home {
+    @include sakura-navbar-scroll-with-page(true);
+  }
+}
+
+@media (max-width: 768px) {
+  html[data-navbar-scroll-with-page-mobile="1"]:not(.is-home) {
+    @include sakura-navbar-scroll-with-page(false);
+  }
+
+  html[data-navbar-scroll-with-page-mobile="1"][data-navbar-scroll-with-page-home="1"].is-home {
+    @include sakura-navbar-scroll-with-page(true);
+  }
+}

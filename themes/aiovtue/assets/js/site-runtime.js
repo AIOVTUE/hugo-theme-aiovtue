@@ -2,6 +2,9 @@
 import { registerPageCleanup } from './page-cleanup.js'
 
 let siteRuntimeTimer = null
+let siteRuntimeVisible = true
+let siteRuntimeVisibilityBound = false
+let onVisibilityChange = null
 
 function parseRuntimeStart(since) {
   const trimmed = String(since || '').trim()
@@ -46,11 +49,33 @@ export function initSiteRuntime() {
     if (units.seconds) units.seconds.textContent = String(seconds)
   }
 
+  const scheduleTick = (interval) => {
+    if (siteRuntimeTimer) window.clearInterval(siteRuntimeTimer)
+    siteRuntimeTimer = window.setInterval(tick, interval)
+  }
+
+  onVisibilityChange = () => {
+    const hidden = document.hidden
+    if (hidden === !siteRuntimeVisible) return
+    siteRuntimeVisible = !hidden
+    scheduleTick(hidden ? 60000 : 1000)
+  }
+
   tick()
-  if (siteRuntimeTimer) window.clearInterval(siteRuntimeTimer)
-  siteRuntimeTimer = window.setInterval(tick, 1000)
+  scheduleTick(1000)
+
+  if (!siteRuntimeVisibilityBound) {
+    siteRuntimeVisibilityBound = true
+    document.addEventListener('visibilitychange', onVisibilityChange)
+  }
+
   registerPageCleanup(() => {
     if (siteRuntimeTimer) window.clearInterval(siteRuntimeTimer)
     siteRuntimeTimer = null
+    if (siteRuntimeVisibilityBound && onVisibilityChange) {
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      siteRuntimeVisibilityBound = false
+      siteRuntimeVisible = true
+    }
   })
 }

@@ -59,7 +59,7 @@
         </div>
         {{ end }}
       </div>
-      <div class="sakura-post-excerpt sakura-post-card__excerpt">{{ $page.Description | default $page.Summary | plainify | truncate 160 }}</div>
+      <div class="sakura-post-excerpt sakura-post-card__excerpt">{{ partial "post-card-excerpt.html" $page }}</div>
     </div>
   </div>
 </article>

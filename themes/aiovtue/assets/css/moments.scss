@@ -2,7 +2,7 @@
 
 .sakura-moments-page {
   width: 100%;
-  min-height: calc(100vh - var(--sakura-navbar-height));
+  min-height: calc(100vh - var(--sakura-navbar-layout-offset));
   box-sizing: border-box;
   background: var(--sakura-color-background);
 }
@@ -358,3 +358,9 @@ html.dark .sakura-comment.sakura-comment--moment {
   }
 }
 
+html.hero-style-grid {
+  .sakura-moments-page,
+  .sakura-moments-page .moments-page {
+    background: transparent;
+  }
+}

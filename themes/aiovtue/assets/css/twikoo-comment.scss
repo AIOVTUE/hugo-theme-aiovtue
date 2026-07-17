@@ -937,3 +937,168 @@ html.dark .moment-comment-host .twikoo {
     font-family: inherit !important;
   }
 }
+
+/* Twikoo 管理后台：独立高对比度样式，避免主题/grid 模式污染 */
+.sakura-comment .twikoo .tk-admin,
+.moment-comment-host .twikoo .tk-admin,
+.sakura-twikoo .twikoo .tk-admin {
+  background-color: rgba(16, 16, 18, 0.96) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #f0f0f0 !important;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  font-size: 14px;
+  line-height: 1.6;
+
+  .tk-panel,
+  .tk-login,
+  .tk-regist,
+  .tk-password,
+  .tk-login-msg {
+    color: #f0f0f0 !important;
+  }
+
+  .tk-login-title,
+  .tk-panel-title,
+  .tk-panel-logout,
+  .tk-admin-config-group-title,
+  .tk-admin-config-title,
+  .tk-admin-config-message {
+    color: #fff !important;
+    font-weight: 600;
+  }
+
+  .tk-admin-config-desc {
+    color: #c8c8c8 !important;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .tk-panel .tk-tab {
+    color: #a8abb2 !important;
+    font-size: 14px;
+  }
+
+  .tk-panel .tk-tab.__active {
+    color: #fff !important;
+  }
+
+  a,
+  .tk-panel-logout,
+  .tk-login-msg a {
+    color: #fff !important;
+  }
+
+  .tk-admin-close,
+  svg {
+    color: #fff !important;
+  }
+
+  .el-input__inner,
+  .el-textarea__inner,
+  textarea {
+    color: #303133 !important;
+    background-color: #fff !important;
+    border-color: rgba(144, 147, 153, 0.55) !important;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+
+  .el-input__inner::placeholder,
+  .el-textarea__inner::placeholder {
+    color: #a8abb2 !important;
+  }
+
+  .tk-admin-config-select {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+    font-size: 14px !important;
+  }
+
+  .tk-admin-config-select option {
+    color: #fff !important;
+    background: #2a2a2a !important;
+  }
+
+  .el-button:not(.el-button--primary):not(.el-button--text) {
+    color: #606266 !important;
+    background: #fff !important;
+    border-color: #dcdfe6 !important;
+  }
+
+  .el-button--text {
+    color: #e8e8e8 !important;
+  }
+
+  /* 评论管理 Tab：正文、昵称、时间与操作按钮 */
+  .tk-admin-comment,
+  .tk-admin-comment-list,
+  .tk-admin-comment-item {
+    color: #f0f0f0 !important;
+  }
+
+  .tk-content {
+    color: #f0f0f0 !important;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .tk-content a {
+    color: #8ec8ff !important;
+  }
+
+  .tk-nick,
+  .tk-nick-link {
+    color: #fff !important;
+  }
+
+  .tk-nick-link:hover {
+    color: #8ec8ff !important;
+  }
+
+  .tk-meta,
+  .tk-time,
+  .tk-expand {
+    color: #b8b8b8 !important;
+  }
+
+  .tk-expand:hover {
+    color: #8ec8ff !important;
+  }
+
+  .tk-comment {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    box-shadow: none !important;
+  }
+
+  .tk-admin-actions {
+    border-bottom-color: rgba(255, 255, 255, 0.22) !important;
+
+    .el-button--text {
+      color: #e8e8e8 !important;
+
+      &:hover,
+      &:focus {
+        color: var(--sakura-color-primary) !important;
+      }
+
+      &:last-child {
+        color: #f78989 !important;
+
+        &:hover,
+        &:focus {
+          color: #ff9a9a !important;
+        }
+      }
+    }
+  }
+
+  .tk-admin-comment-filter-type {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+  }
+}

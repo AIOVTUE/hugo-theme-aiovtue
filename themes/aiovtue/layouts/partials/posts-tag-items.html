@@ -1,0 +1,13 @@
+{{- $tagItems := slice -}}
+{{- range .Site.Taxonomies.tags.ByCount -}}
+  {{- $postCount := 0 -}}
+  {{- range .Pages -}}
+    {{- if in (slice "posts" "excalidraw") .Section -}}
+      {{- $postCount = add $postCount 1 -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if gt $postCount 0 -}}
+    {{- $tagItems = $tagItems | append (dict "name" .Page.Title "count" $postCount "term" .Term) -}}
+  {{- end -}}
+{{- end -}}
+{{- return (sort $tagItems "count" "desc") -}}

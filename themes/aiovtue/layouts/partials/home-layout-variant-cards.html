@@ -1,0 +1,27 @@
+{{- $pageCtx := .PageCtx -}}
+{{- $posts := .Posts -}}
+{{- $paginator := .Paginator -}}
+{{- $mobileCardsList := .MobileCardsList -}}
+{{- $hidden := .Hidden | default false -}}
+{{- $postListId := .PostListId | default false -}}
+{{- $renderPagination := .RenderPagination | default true -}}
+<div
+  class="home-layout-variant"
+  data-layout="cards"
+  data-mobile-cards-list="{{ if $mobileCardsList }}true{{ else }}false{{ end }}"
+  {{- if $hidden }} hidden{{ end -}}
+>
+  <div class="home-layout-notice home-layout-notice--cards">
+    {{- partial "notice-board.html" $pageCtx -}}
+  </div>
+  <div class="sakura-post-list home-post-list"{{ if $postListId }} id="home-post-list"{{ end }}>
+    <div class="post-list-container post-list-container--cards{{ if $mobileCardsList }} post-list-container--mobile-list{{ end }} home-cards-list">
+      {{- range $index, $page := $paginator.Pages -}}
+        {{- partial "post-card.html" (dict "Page" $page "Site" $pageCtx.Site "Index" $index) -}}
+      {{- end -}}
+    </div>
+    {{- if $renderPagination -}}
+      {{- partial "pagination.html" $pageCtx -}}
+    {{- end -}}
+  </div>
+</div>

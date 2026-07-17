@@ -1,0 +1,13 @@
+{{- $tagItems := partial "posts-tag-items.html" . -}}
+{{- if $tagItems -}}
+<div class="home-list-sidebar-card home-list-sidebar-tags">
+  <h3 class="home-list-sidebar-tags__title">标签</h3>
+  <div class="home-list-sidebar-tags__body">
+    <div class="home-list-sidebar-tags__cloud">
+      {{- range first 30 $tagItems -}}
+      <a class="home-list-sidebar-tags__tag" href="{{ `/tags/` | relLangURL }}?tag={{ .name | urlquery }}">{{ .name }}</a>
+      {{- end -}}
+    </div>
+  </div>
+</div>
+{{- end -}}

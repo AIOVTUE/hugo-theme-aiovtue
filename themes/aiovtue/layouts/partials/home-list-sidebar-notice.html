@@ -1,0 +1,15 @@
+{{- if .Site.Params.notice -}}
+<div class="home-list-sidebar-card home-list-sidebar-notice">
+  <h3 class="notice-board__title">{{ .Site.Params.notice.title | default "公告栏" }}</h3>
+  {{- range .Site.Params.notice.sections -}}
+  <div class="notice-board__section">
+    <p class="notice-board__label">{{ .label }}</p>
+    <ul>
+      {{- range .lines -}}
+      <li><a href="https://{{ . }}" target="_blank" rel="noopener">{{ . }}</a></li>
+      {{- end -}}
+    </ul>
+  </div>
+  {{- end -}}
+</div>
+{{- end -}}

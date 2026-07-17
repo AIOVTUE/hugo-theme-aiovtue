@@ -393,24 +393,168 @@ function bindMusicPanelLayoutSync(ap, root, panel, toggle, getPanelOpen) {
   }
 }
 
+function parseCssPx(value, fallback) {
+  const parsed = Number.parseFloat(value)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+
+function getMusicEdgeInsets(root) {
+  const style = getComputedStyle(root)
+  const isMobile = window.matchMedia('(max-width: 480px)').matches
+  const fallbackX = isMobile ? 12 : 16
+  const fallbackY = isMobile ? 16 : 20
+  const inset = parseCssPx(style.getPropertyValue('--sakura-music-edge-x'), fallbackX)
+  const bottom = parseCssPx(style.getPropertyValue('--sakura-music-edge-y'), fallbackY)
+  return {
+    left: inset,
+    right: inset,
+    top: bottom,
+    bottom,
+  }
+}
+
+function isEdgeDockEnabled(root) {
+  if (!root || root.dataset.edgeDock === 'false') return false
+  return root.classList.contains('sakura-music--left') || root.classList.contains('sakura-music--right')
+}
+
+function syncEdgeDock(root) {
+  if (!root) return
+  const enabled = isEdgeDockEnabled(root)
+  root.classList.toggle('is-edge-dock', enabled)
+  if (!enabled) root.classList.remove('is-edge-expanded')
+}
+
+function bindEdgeDock(root) {
+  if (!root || root.dataset.edgeDockBound === '1') return
+  root.dataset.edgeDockBound = '1'
+
+  let collapseTimer = 0
+
+  const canAutoCollapse = () => isEdgeDockEnabled(root)
+    && !root.classList.contains('is-open')
+    && !root.classList.contains('is-dragging')
+
+  const expand = () => {
+    if (!isEdgeDockEnabled(root)) return
+    window.clearTimeout(collapseTimer)
+    root.classList.add('is-edge-expanded')
+  }
+
+  const scheduleCollapse = () => {
+    if (!canAutoCollapse()) return
+    window.clearTimeout(collapseTimer)
+    collapseTimer = window.setTimeout(() => {
+      root.classList.remove('is-edge-expanded')
+    }, 320)
+  }
+
+  root.addEventListener('mouseenter', expand)
+  root.addEventListener('mouseleave', scheduleCollapse)
+  root.addEventListener('focusin', expand)
+  root.addEventListener('focusout', scheduleCollapse)
+  root.addEventListener('pointerdown', (event) => {
+    if (!isEdgeDockEnabled(root)) return
+    if (root.classList.contains('is-open') || root.classList.contains('is-dragging')) return
+    if (event.pointerType === 'mouse' && root.classList.contains('is-edge-expanded')) return
+    expand()
+  }, { capture: true })
+}
+
+function applyMusicDock(root, dock) {
+  root.classList.toggle('sakura-music--left', dock === 'left')
+  root.classList.toggle('sakura-music--right', dock === 'right')
+  root.dataset.position = dock
+  syncEdgeDock(root)
+}
+
+function snapMusicRootPosition(root, x, y) {
+  const width = root.offsetWidth
+  const height = root.offsetHeight
+  const maxX = Math.max(0, window.innerWidth - width)
+  const maxY = Math.max(0, window.innerHeight - height)
+  const insets = getMusicEdgeInsets(root)
+  const edgeDock = isEdgeDockEnabled(root)
+
+  const pickNearest = (current, options) => {
+    let best = options[0]
+    let bestDist = Math.abs(current - best.value)
+    options.slice(1).forEach((option) => {
+      const dist = Math.abs(current - option.value)
+      if (dist < bestDist) {
+        best = option
+        bestDist = dist
+      }
+    })
+    return best
+  }
+
+  const snapX = pickNearest(x, [
+    { value: edgeDock ? 0 : insets.left, dock: 'left' },
+    { value: edgeDock ? maxX : maxX - insets.right, dock: 'right' },
+  ])
+  const snapY = pickNearest(y, [
+    { value: insets.top, vDock: 'top' },
+    { value: maxY - insets.bottom, vDock: 'bottom' },
+  ])
+
+  return {
+    x: clamp(snapX.value, 0, maxX),
+    y: clamp(snapY.value, 0, maxY),
+    dock: snapX.dock,
+    vDock: snapY.vDock,
+  }
+}
+
+function applySnappedMusicPosition(root, storageKey, snapped) {
+  applyMusicDock(root, snapped.dock)
+  root.classList.add('is-custom-position')
+  root.style.left = `${snapped.x}px`
+  root.style.top = `${snapped.y}px`
+  root.style.right = 'auto'
+  root.style.bottom = 'auto'
+
+  const state = readState(storageKey)
+  writeState(storageKey, {
+    ...state,
+    position: { x: snapped.x, y: snapped.y },
+    dock: snapped.dock,
+    vDock: snapped.vDock,
+  })
+}
+
+function resolveMusicPositionFromState(root, state) {
+  const width = root.offsetWidth
+  const height = root.offsetHeight
+  const maxX = Math.max(0, window.innerWidth - width)
+  const maxY = Math.max(0, window.innerHeight - height)
+  const insets = getMusicEdgeInsets(root)
+  const dock = state.dock || root.dataset.position || 'left'
+  const vDock = state.vDock || 'bottom'
+
+  const x = dock === 'right'
+    ? (edgeDock ? maxX : maxX - insets.right)
+    : (edgeDock ? 0 : insets.left)
+  const y = vDock === 'top' ? insets.top : maxY - insets.bottom
+
+  return snapMusicRootPosition(root, x, y)
+}
+
 function applyMusicPosition(root, storageKey) {
+  if (root.dataset.draggable !== 'true') return
+
   const state = readState(storageKey)
   const position = state.position
-  if (
-    root.dataset.draggable === 'true'
-    && position
-    && Number.isFinite(position.x)
-    && Number.isFinite(position.y)
-  ) {
-    const { x, y } = clampMusicRootPosition(root, position.x, position.y)
-    root.classList.add('is-custom-position')
-    root.style.left = `${x}px`
-    root.style.top = `${y}px`
-    root.style.right = 'auto'
-    root.style.bottom = 'auto'
-    if (x !== position.x || y !== position.y) {
-      writeState(storageKey, { ...state, position: { x, y } })
-    }
+
+  if (state.dock) {
+    applyMusicDock(root, state.dock)
+  }
+
+  if (position && Number.isFinite(position.x) && Number.isFinite(position.y)) {
+    const snapped = state.dock && state.vDock
+      ? resolveMusicPositionFromState(root, state)
+      : snapMusicRootPosition(root, position.x, position.y)
+    applySnappedMusicPosition(root, storageKey, snapped)
   }
 }
 
@@ -423,18 +567,6 @@ function bindMusicDrag(root, storageKey, toggle, panel) {
   let originX = 0
   let originY = 0
   let moved = false
-
-  const savePosition = () => {
-    const rect = root.getBoundingClientRect()
-    const state = readState(storageKey)
-    writeState(storageKey, {
-      ...state,
-      position: {
-        x: Math.round(rect.left),
-        y: Math.round(rect.top),
-      },
-    })
-  }
 
   toggle.addEventListener('pointerdown', (event) => {
     if (event.button !== 0) return
@@ -477,7 +609,9 @@ function bindMusicDrag(root, storageKey, toggle, panel) {
       toggle.releasePointerCapture(event.pointerId)
     }
     if (moved) {
-      savePosition()
+      const rect = root.getBoundingClientRect()
+      const snapped = snapMusicRootPosition(root, rect.left, rect.top)
+      applySnappedMusicPosition(root, storageKey, snapped)
       if (panel?.classList.contains('is-visible')) {
         scheduleMusicPanelFit(root, panel, toggle)
       }
@@ -505,6 +639,8 @@ export function initMusicPlayer() {
   const storageKey = root.dataset.storageKey || DEFAULT_STORAGE_KEY
 
   applyMusicPosition(root, storageKey)
+  syncEdgeDock(root)
+  bindEdgeDock(root)
   bindMusicDrag(root, storageKey, toggle, panel)
 
   let panelOpen = false
@@ -564,6 +700,11 @@ export function initMusicPlayer() {
     panel.setAttribute('aria-hidden', open ? 'false' : 'true')
     root.classList.toggle('is-open', open)
     toggle?.setAttribute('aria-expanded', open ? 'true' : 'false')
+    if (open) {
+      root.classList.add('is-edge-expanded')
+    } else if (isEdgeDockEnabled(root)) {
+      root.classList.remove('is-edge-expanded')
+    }
     if (open) {
       scheduleMusicPanelFit(root, panel, toggle)
       window.requestAnimationFrame(() => {

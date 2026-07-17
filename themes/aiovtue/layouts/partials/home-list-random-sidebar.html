@@ -1,0 +1,37 @@
+{{- $posts := .Pages -}}
+{{- if lt (len $posts) 1 -}}{{- return -}}{{- end -}}
+{{- $sorted := partial "posts-sorted.html" (dict "Pages" $posts) -}}
+{{- $count := site.Params.home.randomSidebarCount | default 7 -}}
+{{- if lt $count 1 -}}{{- $count = 7 -}}{{- end -}}
+{{- $poolSize := mul $count 3 -}}
+{{- $pool := first $poolSize $sorted -}}
+{{- $initial := first $count $sorted -}}
+{{- $data := slice -}}
+{{- range $pool -}}
+  {{- $data = $data | append (dict
+    "title" .Title
+    "url" .RelPermalink
+    "date" (.Date.Format "2006-01-02")
+    "dateTime" (.Date.Format "2006-01-02T15:04:05-07:00")
+  ) -}}
+{{- end -}}
+<aside class="home-list-random-sidebar" aria-label="右侧边栏" data-random-count="{{ $count }}">
+  {{- partial "home-list-random-sidebar-archives.html" (dict "Pages" $posts) -}}
+  <div class="home-list-random-sidebar__paper">
+    <h3 class="home-list-random-sidebar__title">
+      <iconify-icon icon="mdi:shuffle-variant" class="home-list-random-sidebar__title-icon" aria-hidden="true"></iconify-icon>
+      <span>随机文章</span>
+    </h3>
+    <ul class="home-list-random-sidebar__list home-list-random-posts-list">
+      {{- range $initial -}}
+      <li class="home-list-random-sidebar__item">
+        <a class="home-list-random-sidebar__link" href="{{ .RelPermalink }}">
+          <span class="home-list-random-sidebar__post-title">{{ .Title }}</span>
+          <time class="home-list-random-sidebar__date" datetime="{{ .Date.Format "2006-01-02T15:04:05-07:00" }}">{{ .Date.Format "2006-01-02" }}</time>
+        </a>
+      </li>
+      {{- end -}}
+    </ul>
+  </div>
+  <script type="application/json" class="home-list-random-posts-data">{{ $data | jsonify }}</script>
+</aside>

@@ -1,6 +1,7 @@
 
 import { registerPageCleanup } from './page-cleanup.js'
 import { cancelTypeWriter, typeWriter } from './typewriter.js'
+import { getNavbarLayoutOffset } from './navbar.js'
 
 const heroMedia = {
   urls: [],
@@ -281,13 +282,34 @@ export function initHeroMedia() {
 
   show('fade')
 
-  const prefetchHeroUrls = urls.filter((_, i) => i !== heroMedia.currentIndex)
-  prefetchHeroUrls.forEach((url) => {
+  const len = urls.length
+  const cur = heroMedia.currentIndex
+  const adjacent = new Set([
+    (cur + 1) % len,
+    (cur - 1 + len) % len,
+  ])
+
+  const prefetchHeroImage = (url) => {
     if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(url)) return
     const img = new Image()
     img.decoding = 'async'
     img.src = url
-  })
+  }
+
+  adjacent.forEach((index) => prefetchHeroImage(urls[index]))
+
+  const prefetchRemainingHeroUrls = () => {
+    urls.forEach((url, index) => {
+      if (index === cur || adjacent.has(index)) return
+      prefetchHeroImage(url)
+    })
+  }
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(prefetchRemainingHeroUrls, { timeout: 8000 })
+  } else {
+    window.setTimeout(prefetchRemainingHeroUrls, 3000)
+  }
 
   const prev = document.getElementById('hero-media-prev')
   const next = document.getElementById('hero-media-next')
@@ -303,11 +325,29 @@ export function initHeroMedia() {
   initHeroPlayer()
 }
 
+const HITOKOTO_CACHE_KEY = 'sakura-hitokoto'
+const HITOKOTO_CACHE_TTL = 30 * 60 * 1000
+
 async function fetchHitokotoText() {
+  try {
+    const cached = sessionStorage.getItem(HITOKOTO_CACHE_KEY)
+    if (cached) {
+      const parsed = JSON.parse(cached)
+      if (parsed?.text && Date.now() - (parsed.ts || 0) < HITOKOTO_CACHE_TTL) {
+        return parsed.text
+      }
+    }
+  } catch (_) { /* ignore cache errors */ }
+
   const res = await fetch('https://v1.hitokoto.cn/?encode=json', { cache: 'no-store' })
   if (!res.ok) throw new Error('hitokoto failed')
   const data = await res.json()
   if (!data?.hitokoto) throw new Error('hitokoto empty')
+
+  try {
+    sessionStorage.setItem(HITOKOTO_CACHE_KEY, JSON.stringify({ text: data.hitokoto, ts: Date.now() }))
+  } catch (_) { /* ignore cache errors */ }
+
   return data.hitokoto
 }
 
@@ -350,7 +390,7 @@ export function scrollPastHero() {
   const target = document.getElementById('home-posts')
   if (!hero && !target) return
 
-  const navHeight = Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sakura-navbar-height'), 10) || 65
+  const navHeight = getNavbarLayoutOffset()
   const top = target
     ? target.getBoundingClientRect().top + window.scrollY - navHeight
     : Math.max(0, hero.getBoundingClientRect().bottom + window.scrollY - navHeight)

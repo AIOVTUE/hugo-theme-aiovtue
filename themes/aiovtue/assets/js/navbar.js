@@ -1,8 +1,110 @@
 
 export let refreshHomeNavbar = null
 export let refreshMobileNavbarCollapse = null
+export let refreshDesktopNavbarCollapse = null
 
 const MOBILE_NAVBAR_MQ = '(max-width: 768px)'
+const DESKTOP_NAVBAR_MQ = '(min-width: 769px)'
+
+export function getNavbarLayoutOffset() {
+  const root = document.documentElement
+  const layoutOffset = Number.parseFloat(
+    getComputedStyle(root).getPropertyValue('--sakura-navbar-layout-offset').trim(),
+  )
+  if (Number.isFinite(layoutOffset)) return layoutOffset
+
+  return Number.parseInt(getComputedStyle(root).getPropertyValue('--sakura-navbar-height'), 10) || 65
+}
+
+function isNavbarCollapseBlocked(navbar) {
+  if (document.documentElement.classList.contains('is-search-open')) return true
+  if (navbar.classList.contains('is-scroll-locked')) return true
+  if (document.getElementById('sidebar')?.classList.contains('is-open')) return true
+  return false
+}
+
+function initNavbarScrollCollapse({
+  flagAttr,
+  readyAttr,
+  collapsedClass,
+  mediaQuery,
+  collapseOnHomeAttr,
+  thresholdAttr,
+  deltaAttr,
+  revealModeAttr,
+  fallbackThreshold,
+  fallbackDelta,
+  setRefresh,
+}) {
+  const navbar = document.getElementById('navbar')
+  if (!navbar || navbar.getAttribute(flagAttr) !== '1') return
+  if (navbar.dataset[readyAttr] === '1') return
+  navbar.dataset[readyAttr] = '1'
+
+  const threshold = Number.parseInt(navbar.getAttribute(thresholdAttr) || '', 10)
+  const scrollDelta = Number.parseInt(navbar.getAttribute(deltaAttr) || '', 10)
+  const revealMode = navbar.getAttribute(revealModeAttr) || 'scrollUp'
+  const scrollThreshold = Number.isFinite(threshold) && threshold >= 0 ? threshold : fallbackThreshold
+  const minDelta = Number.isFinite(scrollDelta) && scrollDelta > 0 ? scrollDelta : fallbackDelta
+  const collapseOnHome = navbar.getAttribute(collapseOnHomeAttr) === '1'
+
+  let lastScrollY = window.scrollY
+  let collapsed = false
+  let scrollRaf = 0
+
+  const isEnabledContext = () => {
+    if (!window.matchMedia(mediaQuery).matches) return false
+    if (document.documentElement.classList.contains('is-home') && !collapseOnHome) return false
+    if (isNavbarCollapseBlocked(navbar)) return false
+    return true
+  }
+
+  const setCollapsed = (next) => {
+    if (collapsed === next) return
+    collapsed = next
+    navbar.classList.toggle(collapsedClass, next)
+  }
+
+  const update = () => {
+    if (!isEnabledContext()) {
+      setCollapsed(false)
+      lastScrollY = window.scrollY
+      return
+    }
+
+    const scrollY = window.scrollY
+    if (scrollY <= scrollThreshold) {
+      setCollapsed(false)
+    } else {
+      const diff = scrollY - lastScrollY
+      if (diff > minDelta) {
+        setCollapsed(true)
+      } else if (revealMode === 'scrollUp' && diff < -minDelta) {
+        setCollapsed(false)
+      }
+    }
+
+    lastScrollY = scrollY
+  }
+
+  const scheduleUpdate = () => {
+    if (scrollRaf) return
+    scrollRaf = window.requestAnimationFrame(() => {
+      scrollRaf = 0
+      update()
+    })
+  }
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true })
+  window.addEventListener('resize', scheduleUpdate, { passive: true })
+
+  setRefresh(() => {
+    lastScrollY = window.scrollY
+    update()
+  })
+
+  update()
+}
 
 export function initHomeNavbar() {
   const navbar = document.getElementById('navbar')
@@ -58,76 +160,35 @@ export function initHomeNavbar() {
 }
 
 export function initMobileNavbarCollapse() {
-  const navbar = document.getElementById('navbar')
-  if (!navbar || navbar.dataset.mobileCollapse !== '1') return
-  if (navbar.dataset.mobileCollapseReady === '1') return
-  navbar.dataset.mobileCollapseReady = '1'
+  initNavbarScrollCollapse({
+    flagAttr: 'data-mobile-collapse',
+    readyAttr: 'mobileCollapseReady',
+    collapsedClass: 'is-mobile-collapsed',
+    mediaQuery: MOBILE_NAVBAR_MQ,
+    collapseOnHomeAttr: 'data-mobile-collapse-home',
+    thresholdAttr: 'data-scroll-threshold',
+    deltaAttr: 'data-scroll-delta',
+    revealModeAttr: 'data-reveal-mode',
+    fallbackThreshold: 48,
+    fallbackDelta: 15,
+    setRefresh: (fn) => { refreshMobileNavbarCollapse = fn },
+  })
+}
 
-  const threshold = Number.parseInt(navbar.dataset.scrollThreshold || '', 10)
-  const scrollDelta = Number.parseInt(navbar.dataset.scrollDelta || '', 10)
-  const revealMode = navbar.dataset.revealMode || 'scrollUp'
-  const scrollThreshold = Number.isFinite(threshold) && threshold >= 0 ? threshold : 48
-  const minDelta = Number.isFinite(scrollDelta) && scrollDelta > 0 ? scrollDelta : 8
-
-  let lastScrollY = window.scrollY
-  let collapsed = false
-  let scrollRaf = 0
-
-  const isEnabledContext = () => {
-    if (!window.matchMedia(MOBILE_NAVBAR_MQ).matches) return false
-    const collapseOnHome = navbar.dataset.mobileCollapseHome === '1'
-    if (document.documentElement.classList.contains('is-home') && !collapseOnHome) return false
-    if (document.documentElement.classList.contains('is-search-open')) return false
-    if (navbar.classList.contains('is-scroll-locked')) return false
-    if (document.getElementById('sidebar')?.classList.contains('is-open')) return false
-    return true
-  }
-
-  const setCollapsed = (next) => {
-    if (collapsed === next) return
-    collapsed = next
-    navbar.classList.toggle('is-mobile-collapsed', next)
-  }
-
-  const update = () => {
-    if (!isEnabledContext()) {
-      setCollapsed(false)
-      lastScrollY = window.scrollY
-      return
-    }
-
-    const scrollY = window.scrollY
-    if (scrollY <= scrollThreshold) {
-      setCollapsed(false)
-    } else {
-      const diff = scrollY - lastScrollY
-      if (diff > minDelta) {
-        setCollapsed(true)
-      } else if (revealMode === 'scrollUp' && diff < -minDelta) {
-        setCollapsed(false)
-      }
-    }
-
-    lastScrollY = scrollY
-  }
-
-  const scheduleUpdate = () => {
-    if (scrollRaf) return
-    scrollRaf = window.requestAnimationFrame(() => {
-      scrollRaf = 0
-      update()
-    })
-  }
-
-  window.addEventListener('scroll', scheduleUpdate, { passive: true })
-  window.addEventListener('resize', scheduleUpdate, { passive: true })
-
-  refreshMobileNavbarCollapse = () => {
-    lastScrollY = window.scrollY
-    update()
-  }
-
-  update()
+export function initDesktopNavbarCollapse() {
+  initNavbarScrollCollapse({
+    flagAttr: 'data-desktop-collapse',
+    readyAttr: 'desktopCollapseReady',
+    collapsedClass: 'is-desktop-collapsed',
+    mediaQuery: DESKTOP_NAVBAR_MQ,
+    collapseOnHomeAttr: 'data-desktop-collapse-home',
+    thresholdAttr: 'data-desktop-scroll-threshold',
+    deltaAttr: 'data-desktop-scroll-delta',
+    revealModeAttr: 'data-desktop-reveal-mode',
+    fallbackThreshold: 15,
+    fallbackDelta: 15,
+    setRefresh: (fn) => { refreshDesktopNavbarCollapse = fn },
+  })
 }
 
 export function initNavbarLinkScroll() {

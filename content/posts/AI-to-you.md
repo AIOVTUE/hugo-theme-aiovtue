@@ -17,6 +17,12 @@ pinned: true
 众所周知，基本上每一篇博客的第一篇文章都会是*Hellow world！*，如果你也是这么打算的，希望你可以使用**AIOVTUE-雪**帮你写的那一篇，就当做是**AIOVTUE-雪**来过的证明吧
 当然啦，这个不是强制的，知识**AIOVTUE-雪**自己希望而已，你也可以删掉或者换成自己喜欢的啦~期待看到你们的作品哦
 ### 一些提示
+本主题经过多次更新，每次更新都有对应更新文档，部分更新内容未写在仓库配置文件中，请自行跳转查阅  
+- [主题发布-1.0](https://daily.yybb.us/posts/hugo-theme/aiovtue/hugotheme-aiovtue/)
+- [主题首次大更新-1.5](https://daily.yybb.us/posts/hugo-theme/aiovtue/hugo-aiovtueupdate/)
+- [主题小更新-1.6](https://daily.yybb.us/posts/hugo-theme/aiovtue/theme-aiovtue-up2/)
+- [主题更新-2.0](https://daily.yybb.us/posts/hugo-theme/aiovtue/update-26717/)
+
 ### 一点补充
 如果你打算保留**AIOVTUE-雪**的 *Hellow world*文章，那么这里记得看哦，为了适配你们的博客样式，这篇文章并没有设置头图，也就是cover，网站会使用默认的cover，你可以切换默认的cover，具体位置和方法如下，在路径`\static\img`下有一个名为`default-cover.png`的图片文件，这就是默认头图，复制此文件名，将你想替换的图片重命名为这个，直接替换源文件即可，顺便说一嘴，大部分页面的头图，例如友链页面，主页面等的背景图片都在`\static`文件夹下方`img`和`hero`文件夹内，你们可以自行替换，当然也可以直接使用图床链接哦~
 

@@ -99,6 +99,33 @@ function collectGalleryPostItems(root = document) {
   return items
 }
 
+function isGalleryPostVideoCenterClick(button, event) {
+  const icon = button.querySelector('.sakura-gallery-post-media__play svg')
+  const play = button.querySelector('.sakura-gallery-post-media__play')
+  const target = icon || play
+  if (!target) {
+    const rect = button.getBoundingClientRect()
+    const ratio = 0.34
+    const zoneW = rect.width * ratio
+    const zoneH = rect.height * ratio
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    return (
+      Math.abs(event.clientX - cx) <= zoneW / 2 &&
+      Math.abs(event.clientY - cy) <= zoneH / 2
+    )
+  }
+
+  const rect = target.getBoundingClientRect()
+  const pad = Math.max(16, Math.min(rect.width, rect.height) * 0.35)
+  return (
+    event.clientX >= rect.left - pad &&
+    event.clientX <= rect.right + pad &&
+    event.clientY >= rect.top - pad &&
+    event.clientY <= rect.bottom + pad
+  )
+}
+
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
@@ -286,6 +313,73 @@ function createSlideDanmakuController(slide) {
   return { start, stop }
 }
 
+function resetGalleryPostVideo(video, button) {
+  if (!video) return
+  video.pause()
+  video.controls = false
+  video.muted = true
+  button?.classList.remove('is-playing')
+  primeGalleryPostVideoThumb(video)
+}
+
+function bindGalleryPostInlineVideos(viewer) {
+  const buttons = [...viewer.querySelectorAll('.sakura-gallery-post-media[data-media-type="video"]')]
+  const cleanups = []
+
+  const pauseAll = () => {
+    buttons.forEach((button) => {
+      resetGalleryPostVideo(button.querySelector('video.sakura-gallery-post-media__el'), button)
+    })
+  }
+
+  buttons.forEach((button) => {
+    const video = button.querySelector('video.sakura-gallery-post-media__el')
+    if (!video) return
+
+    const onClick = (event) => {
+      if (!isGalleryPostVideoCenterClick(button, event)) {
+        pauseAll()
+        return
+      }
+
+      event.preventDefault()
+      event.stopImmediatePropagation()
+
+      if (!video.paused && !video.ended) {
+        video.pause()
+        return
+      }
+
+      pauseAll()
+      video.muted = false
+      video.controls = true
+      button.classList.add('is-playing')
+      void video.play().catch(() => {
+        button.classList.remove('is-playing')
+        video.controls = false
+        video.muted = true
+      })
+    }
+
+    const onEnded = () => resetGalleryPostVideo(video, button)
+
+    button.addEventListener('click', onClick, true)
+    video.addEventListener('ended', onEnded)
+    cleanups.push(() => {
+      button.removeEventListener('click', onClick, true)
+      video.removeEventListener('ended', onEnded)
+      resetGalleryPostVideo(video, button)
+    })
+  })
+
+  return {
+    pauseAll,
+    destroy() {
+      cleanups.forEach((cleanup) => cleanup())
+    },
+  }
+}
+
 function mountGalleryPost(registerPageCleanup) {
   const viewer = document.querySelector('.sakura-gallery-post-viewer')
   if (!viewer || viewer.dataset.galleryMounted === '1') return
@@ -329,8 +423,10 @@ function mountGalleryPost(registerPageCleanup) {
   }
 
   let thumbController = null
+  const videoController = bindGalleryPostInlineVideos(viewer)
 
   const showSlide = (nextIndex) => {
+    videoController.pauseAll()
     index = (nextIndex + total) % total
     slides.forEach((slide, i) => {
       const active = i === index
@@ -420,6 +516,7 @@ function mountGalleryPost(registerPageCleanup) {
     motionQuery.removeEventListener?.('change', onMotionChange)
     resizeObserver?.disconnect()
     thumbController?.destroy()
+    videoController.destroy()
     stopAllDanmaku()
     delete viewer.dataset.galleryMounted
   })

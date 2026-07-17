@@ -11,8 +11,6 @@
   align-items: stretch;
 
   .sakura-page-header {
-    margin-top: var(--sakura-navbar-height);
-
     .sakura-header-title {
       justify-content: center;
     }
@@ -48,6 +46,13 @@
       padding-inline: #{"max(8px, env(safe-area-inset-left, 0px))"} #{"max(8px, env(safe-area-inset-right, 0px))"} !important;
       border-radius: 0;
     }
+  }
+}
+
+html.hero-style-grid {
+  .sakura-gallery-page .sakura-page-content,
+  .sakura-gallery-album-page .sakura-page-content {
+    background: transparent;
   }
 }
 

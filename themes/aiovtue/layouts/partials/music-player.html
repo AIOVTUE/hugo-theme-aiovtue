@@ -15,11 +15,14 @@
   {{- $position = "left" -}}
 {{- end -}}
 {{- $draggable := default false $music.draggable -}}
+{{- $edgeDock := true -}}
+{{- if isset $music "edgeDock" -}}{{- $edgeDock = $music.edgeDock -}}{{- end -}}
 <div
   class="sakura-music sakura-music--{{ $position }}"
   id="sakura-music"
   data-storage-key="sakura-music-state"
   data-position="{{ $position }}"
+  data-edge-dock="{{ if $edgeDock }}true{{ else }}false{{ end }}"
   {{- if $draggable -}}
   data-draggable="true"
   {{- end -}}

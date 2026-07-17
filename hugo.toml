@@ -104,7 +104,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   [params.links]
     layout = 'preview'                        # preview：卡片截图 | simple：长条头像+悬停预览
     rssEnable = true                         # 友链页「朋友动态」RSS 展示（关闭时不拉取 RSS）
-    footerEnable = true                      # 全站页脚友链列表展示
+    footerEnable = false                      # 全站页脚友链列表展示
 
   # --- 动态页（每条动态：content/moments/*.md，front matter 仅需 date）---
   [params.moments]
@@ -135,6 +135,16 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 
   # --- 首页 Hero 大图 / 视频轮播 ---
   # 媒体文件放在 static/hero/，此处写 URL 路径（以 / 开头）
+  
+  
+  
+  # grid 全站背景网格（仅 params.hero.style = 'grid' 时生效）
+  # size：单元格边长（px）；lineOpacity / lineOpacityDark：线条透明度 0~1，越大越深
+  [params.hero.grid]
+    size = 20
+    lineOpacity = 0.1
+    lineOpacityDark = 0.1
+
   [params.hero]
     title = 'AIOVTUE'
     motto = '雨是神的烟花'
@@ -163,24 +173,40 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     runtimeSince = '2024-01-01'   # 站点运行倒计时起点（YYYY-MM-DD）
     icp = '<a href="https://icp.gov.moe/?keyword=20260258" target="_blank" rel="noopener">萌ICP备20260258号</a>'
 
-  # --- 首页公告栏（右侧域名列表）---
+# --- 首页公告栏（右侧域名列表）---
   # --- 首页文章列表布局 ---
   # cards：默认卡片列表（含公告栏与随机文章轮播）
+  # list：紧凑列表（电脑端单列时左栏站点信息/公告/标签 + 右栏文章；双列时无侧栏；不显示顶部公告栏）
   # timeline：居中时间线，文章左右交替；不显示公告栏与随机文章
-    # mobileCardsLayout：cards 模式下手机端文章列表样式（仅 max-width: 768px 生效）
-  #   stack — 竖向卡片（默认，与桌面左右交替卡片在手机端的表现一致）
-  #   list  — 列表样式：隐藏公告栏与随机文章；一行一条，左图 40% / 右文 60%
-  # mobileCardsPaging：cards 模式下手机端翻页方式（仅 max-width: 768px 生效；桌面端始终分页）
-  #   pagination — 底部分页器翻页（默认）
-  #   loadMore   — 滑动到底部自动加载更多（仅首页第一页）
-  # mobileCardsBatchSize：手机端 loadMore 模式每次加载条数
+  # layout：关闭随机时使用的固定布局；layouts 未设置时的后备
+  # layouts：首页布局候选池（cards / list / timeline）（不建议使用）
+  # layoutRandom：是否启用随机（仅电脑端；移动端固定使用 layout） （不建议使用）
+  # layouts 含 2 项及以上：电脑端在布局变体间随机
+  # layouts 仅含 list 时：电脑端在 list 单列/双列间随机
+  # layoutRandom = false 时：固定使用 layout 与 desktopListColumns
+  # mobileCardsLayout：cards / list 模式下手机端文章列表样式（仅 max-width: 768px 生效）
+  # stack — 竖向卡片（cards 模式默认；list 模式下可显式设为 stack 以覆盖默认 list）
+  # list  — 列表样式：隐藏公告栏与随机文章
+  # single — 单列（默认）
+  # double — 双列
+  
+  
   [params.home]
-    layout = 'cards'
-    mobileCardsLayout = 'list'
-    mobileCardsPaging = 'loadMore'
-    mobileCardsBatchSize = 10
-    timelineBatchSize = 10   # 时间线模式：首屏条数及每次滚动加载条数
-
+    layout = 'cards'   # （cards，list，timeline）建议不要使用时间线模式，即timeline，不成熟样式
+    desktopListColumns = 'single' # （single，double）list模式下单双列样式切换在此配置
+    mobileCardsLayout = 'list'     #移动端样式设置（list、stack）注意桌面端cards和list模式下移动端布局略有区别，具体自行切换查看和体验
+    mobileCardsBatchSize = 10  # 每页文章数，这个和上一个配置都是桌面移动端通用的，只是名字没改而已
+    # timelineBatchSize = 10   # 时间线模式：首屏条数及每次滚动加载条数
+    
+    # 下列配置在list模式下生效，不建议更改
+    archiveHeatmapColumns = 13  # 右侧归档热力图：每行列数
+    archiveHeatmapRows = 4      # 右侧归档热力图：行数（格子总数 = 列数 × 行数）
+    randomSidebarCount = 7      # 右侧随机文章显示篇数，不建议过多
+    
+    # 下方配置不建议动，过大会影响网页性能
+    featuredCount = 4           # list 模式推荐区同时可见卡片数
+    featuredPoolCount = 12      # list 模式推荐区候选池（排序后取前 N 篇 SSR，供切换按钮轮换）
+    
   [params.notice]
     title = '公告栏'
     rotateInterval = 5000  # 左侧随机文章轮播间隔（毫秒）
@@ -188,8 +214,8 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
       label = '--- 主域名 ---'
       lines = ['daily.yybb.us', 'day.yybb.us']
     [[params.notice.sections]]
-      label = '--- 备用域名 ---'
-      lines = ['daily.20030327.xyz', 'daily.yybb.dpdns.org', 'daily.aiovtue.dpdns.org']
+      label = '--- 这是公告 ---'
+      lines = ['公告在配置文件中修改哦']
 
   # --- 侧栏 / Hero 社交图标（icon 为 Iconify 图标名）---
   [[params.social]]
@@ -259,7 +285,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # provider 可选：waline | twikoo
   # 单篇文章可在 front matter 写 comment: false 关闭评论区
   [params.comment]
-    provider = 'waline'
+    provider = 'twikoo'
 
   # --- Waline 评论（https://waline.js.org/）---
   # 仅当 params.comment.provider = waline 时生效；当前使用 twikoo，此处留作切换备用
@@ -269,8 +295,11 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 
   # --- Twikoo 评论（仅当 params.comment.provider = twikoo 时生效）---
   # 留空 envId 时评论区显示配置提示，不影响站点其它功能
+  # visitorEnable：文章访问量统计（需 provider=twikoo 且已配置 envId）
+  # COMMENT_PLACEHOLDER 请在 Twikoo 管理后台「配置」中设置
   [params.twikoo]
     envId = 'https://your-twikoo-url'
+    visitorEnable = true   # 开启文章访问数量统计，基于twikoo
 
   # --- 留言页信封动画图片（文件在 static/envelope/）---
   [params.envelope]
@@ -289,14 +318,26 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     subTitle = '雨是神的烟花'
     offset = 0
 
-    # 移动端下滑隐藏顶栏（首页除外）
     # 移动端下滑隐藏顶栏（默认首页不生效，设 includeHome = true 则全站含首页生效）
     [params.navbar.mobileCollapse]
       enable = true
-      includeHome = true
-      scrollThreshold = 48   # 滚动超过该距离后才允许隐藏（px）
-      scrollDelta = 15        # 单次滑动超过该值触发隐藏/恢复（px）
+      includeHome = false    # 是否包括主页
+      scrollThreshold = 5   # 滚动超过该距离后才允许隐藏（px）
+      scrollDelta = 10        # 单次滑动超过该值触发隐藏/恢复（px）
       revealMode = 'scrollUp' # 隐藏后如何恢复：top = 回到顶部才显示 | scrollUp = 上划即显示
+
+    # 电脑端下滑隐藏顶栏（min-width: 769px；默认关闭）
+    [params.navbar.desktopCollapse]
+      enable = true
+      includeHome = false   # 是否包括主页
+      scrollThreshold = 5
+      scrollDelta = 5
+      revealMode = 'scrollUp'
+
+    # 顶栏随页面滚出视口（与自动隐藏互斥：对应端开启 collapse 时无效）
+    [params.navbar.scrollWithPage]
+      enable = false       # true = 内页顶栏随页面滚出视口；false = 全站 fixed 顶栏
+      includeHome = false # false = 首页保持 fixed + Hero 全屏；true = 首页也随页滚动（透明顶栏叠层）
 
   # --- 全文搜索（Fuse.js）---
   [params.search]
@@ -362,13 +403,13 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     icon = 'ant-design:idcard-filled'
     weight = 6
 
-  # --- 音乐播放器（APlayer + Meting.js）---
+# --- 音乐播放器（APlayer + Meting.js）---
   # enable：是否显示播放器；单页可在 front matter 写 musicPlayer: false 关闭
   [params.music]
     enable = true
-    position = 'right'                             # left | right，按钮默认停靠左下或右下
-    draggable = false                             # 是否允许拖动按钮到任意位置（位置会记住）
-    # apis：按顺序尝试，前一个不可用时自动切换下一个
+    position = 'right'        # left | right，按钮默认停靠左下或右下
+    
+    # apis：按顺序尝试，前一个不可用时自动切换下一个，默认不需要动
     apis = [
       'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r',
       'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id',

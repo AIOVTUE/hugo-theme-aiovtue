@@ -38,7 +38,11 @@
 
 {{- end -}}
 
+{{- if partial "signature-needed.html" . -}}
+
 <link rel="stylesheet" data-sakura-page-style="signature" href="{{ `/signature/signature.css` | relURL }}">
+
+{{- end -}}
 
 {{- if or (eq .Section "moments") (eq .Layout "moments") -}}
 
@@ -85,6 +89,12 @@
 {{- if eq .Layout "search" -}}
 
   {{- partial "stylesheet.html" (dict "name" "css/search.scss" "key" "search") -}}
+
+{{- end -}}
+
+{{- if and (eq .Section "posts") (strings.HasSuffix .RelPermalink "/posts/weekly/") -}}
+
+  {{- partial "stylesheet.html" (dict "name" "css/weekly.scss" "key" "weekly") -}}
 
 {{- end -}}
 

@@ -1,0 +1,53 @@
+{{- $pageCtx := .PageCtx -}}
+{{- $posts := .Posts -}}
+{{- $paginator := .Paginator -}}
+{{- $batchSize := .TimelineBatchSize | default 10 -}}
+{{- $hidden := .Hidden | default false -}}
+{{- $postListId := .PostListId | default false -}}
+{{- $isFirstPage := eq $paginator.PageNumber 1 -}}
+{{- $visible := $paginator.Pages -}}
+{{- $remaining := slice -}}
+{{- if $isFirstPage -}}
+  {{- $visible = first $batchSize $posts -}}
+  {{- $remaining = after (len $visible) $posts -}}
+{{- end -}}
+<div
+  class="home-layout-variant"
+  data-layout="timeline"
+  data-mobile-cards-list="false"
+  {{- if $hidden }} hidden{{ end -}}
+>
+  <div class="sakura-post-list home-post-list"{{ if $postListId }} id="home-post-list"{{ end }}>
+    <div class="post-list-container post-list-container--timeline">
+      <ol class="home-timeline home-timeline-list">
+        {{- range $index, $page := $visible -}}
+          {{- partial "post-card-timeline.html" (dict "Page" $page "Site" $pageCtx.Site "Index" $index) -}}
+        {{- end -}}
+      </ol>
+      {{- if and $isFirstPage $remaining -}}
+        {{- $morePosts := slice -}}
+        {{- range $index, $page := $remaining -}}
+          {{- $modifiedDate := partial "post-modified-date.html" $page -}}
+          {{- $showDate := $modifiedDate.showDate -}}
+          {{- $morePosts = $morePosts | append (dict
+            "title" $page.Title
+            "url" $page.RelPermalink
+            "date" $modifiedDate.display
+            "dateTime" $modifiedDate.datetime
+            "dateOnly" $modifiedDate.dateOnly
+            "dateYear" ($showDate.Format "2006")
+            "dateMd" ($showDate.Format "01-02")
+            "excerpt" (partial "post-card-excerpt.html" $page)
+            "index" (add (len $visible) $index)
+          ) -}}
+        {{- end -}}
+        <script type="application/json" class="home-timeline-more-data">{{ $morePosts | jsonify }}</script>
+        <div class="home-timeline-scroll-sentinel" data-batch-size="{{ $batchSize }}" aria-hidden="true"></div>
+        <p class="home-timeline-load-status" hidden aria-live="polite"></p>
+      {{- end -}}
+    </div>
+    {{- if gt $paginator.TotalPages 1 -}}
+      {{- partial "pagination.html" $pageCtx -}}
+    {{- end -}}
+  </div>
+</div>

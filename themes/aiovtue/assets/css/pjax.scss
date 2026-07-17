@@ -1,4 +1,5 @@
 #content {
+  background: var(--sakura-color-background);
   transition: opacity 0.2s ease;
 
   &.is-pjax-leaving {
@@ -16,6 +17,12 @@
 body.is-pjax-loading {
   overflow: hidden;
   overscroll-behavior: none;
+  background: var(--sakura-color-background);
+}
+
+html.hero-style-grid body.is-pjax-loading,
+html.hero-style-grid #content {
+  background: transparent;
 }
 
 #sakura-pjax-loader {
@@ -28,7 +35,8 @@ body.is-pjax-loading {
   margin: 0;
   padding: 0;
   border: 0;
-  background: color-mix(in srgb, var(--sakura-color-background, #fff) 72%, transparent);
+  --sakura-pjax-overlay-opacity: 72%;
+  background: color-mix(in srgb, var(--sakura-color-background, #fff) var(--sakura-pjax-overlay-opacity), transparent);
   backdrop-filter: blur(2px);
   opacity: 1;
   visibility: visible;
@@ -43,7 +51,8 @@ body.is-pjax-loading {
 }
 
 html.dark #sakura-pjax-loader {
-  background: color-mix(in srgb, #1a1a1a 78%, transparent);
+  background: var(--sakura-color-background);
+  backdrop-filter: none;
 }
 
 .sakura-pjax-loader__panel {

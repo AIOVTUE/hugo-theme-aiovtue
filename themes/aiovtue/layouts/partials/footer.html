@@ -13,31 +13,9 @@
 
   {{ end }}
 
-  <div class="sakura-copyright">
-
-    <span>
-
-      Copyright &copy;
-
-      <span itemprop="copyrightYear">
-
-        {{ if ne (int $.Site.Params.footer.since) (now.Year) }}{{ $.Site.Params.footer.since }} - {{ end }}{{ now.Year }}
-
-      </span>
-
-    </span>
-
-    <span>by</span>
-
-    <span itemprop="copyrightHolder">
-      {{- if default true .Site.Params.signature.footerEnable -}}
-      <span class="sakura-copyright-signature">{{- partial "signature-inline.html" . -}}</span>
-      {{- else -}}
-      <span class="sakura-copyright-author">{{ .Site.Params.author.name }}</span>
-      {{- end -}}
-    </span>
-
-  </div>
+  <p class="sakura-footer-powered">
+    Powered by <a href="https://github.com/gohugoio/hugo" target="_blank" class="sakura-footer-powered__link">hugo</a> & theme <a href="https://github.com/AIOVTUE/hugo-theme-aiovtue" target="_blank" class="sakura-footer-powered__link">aiovtue</a>
+  </p>
 
   {{ with .Site.Params.footer.runtimeSince }}
 
@@ -57,9 +35,34 @@
 
   {{ end }}
 
-  <p class="sakura-footer-powered">
-    Powered by <a href="https://github.com/gohugoio/hugo" target="_blank" class="sakura-footer-powered__link">hugo</a> & theme <a href="https://github.com/AIOVTUE/hugo-theme-aiovtue" target="_blank" class="sakura-footer-powered__link">aiovtue</a>
-  </p>
+  <div class="sakura-copyright">
+
+    <span>
+
+      Copyright &copy;
+
+      <span itemprop="copyrightYear">
+
+        {{ if ne (int $.Site.Params.footer.since) (now.Year) }}{{ $.Site.Params.footer.since }} - {{ end }}{{ now.Year }}
+
+      </span>
+
+    </span>
+
+    <span>by</span>
+
+    <span itemprop="copyrightHolder">
+      {{- if default true .Site.Params.signature.footerEnable -}}
+      <span class="sakura-copyright-signature">
+        <span class="sakura-copyright-author-fallback">{{ .Site.Params.author.name }}</span>
+        {{- partial "signature-inline.html" (dict) -}}
+      </span>
+      {{- else -}}
+      <span class="sakura-copyright-author">{{ .Site.Params.author.name }}</span>
+      {{- end -}}
+    </span>
+
+  </div>
 
   {{- if partial "footer-links-enabled.html" . -}}
   {{- partial "footer-links-nav.html" . -}}

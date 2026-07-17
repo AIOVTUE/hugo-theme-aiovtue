@@ -1,6 +1,9 @@
 {{- partial "moments-script.html" . -}}
 {{- partial "excalidraw-script.html" . -}}
 {{- partial "gallery-post-script.html" . -}}
+{{- partial "music-player-script.html" . -}}
+{{- if partial "signature-needed.html" . -}}
 <script src="{{ `/signature/signature.js` | relURL }}" defer></script>
+{{- end -}}
 {{ $js := resources.Get "js/main.js" | js.Build | minify | fingerprint }}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>

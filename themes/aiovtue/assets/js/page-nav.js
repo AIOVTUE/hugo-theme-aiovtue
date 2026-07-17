@@ -58,10 +58,22 @@ function syncHtmlClasses(docEl) {
   root.classList.toggle('is-home', docEl.classList.contains('is-home'))
   root.classList.toggle('has-home-layout', docEl.classList.contains('has-home-layout'))
   root.classList.toggle('has-404-layout', docEl.classList.contains('has-404-layout'))
+  ;[...root.classList]
+    .filter((className) => className.startsWith('hero-style-'))
+    .forEach((className) => root.classList.remove(className))
+  ;[...docEl.classList]
+    .filter((className) => className.startsWith('hero-style-'))
+    .forEach((className) => root.classList.add(className))
+  root.lang = 'zh-CN'
+  root.setAttribute('translate', 'no')
+  root.classList.add('notranslate')
+  document.body?.setAttribute('translate', 'no')
+  document.body?.classList.add('notranslate')
+  window.__sakuraDismissTranslateUi?.()
 }
 
 function syncHeadMeta(doc) {
-  doc.querySelectorAll('meta[name="sakura-moments-script"], meta[name="sakura-excalidraw-script"], meta[name="sakura-gallery-post-script"], meta[name="sakura-twikoo-env"], meta[name="sakura-waline-server"], meta[name="sakura-comment-provider"]').forEach((meta) => {
+  doc.querySelectorAll('meta[name="sakura-moments-script"], meta[name="sakura-excalidraw-script"], meta[name="sakura-gallery-post-script"], meta[name="sakura-twikoo-env"], meta[name="sakura-waline-server"], meta[name="sakura-comment-provider"], meta[name="sakura-signature-script"]').forEach((meta) => {
     const name = meta.getAttribute('name')
     if (!name) return
     let current = document.querySelector(`meta[name="${name}"]`)
@@ -407,6 +419,9 @@ export function initPageNav({ mountPage, unmountPage, resolveScrollAfterMount, c
 
     navigating = true
     showPjaxLoader()
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    })
 
     try {
       markSkipLoader()

@@ -1,0 +1,24 @@
+{{- $posts := .Pages -}}
+{{- if lt (len $posts) 1 -}}{{- return -}}{{- end -}}
+{{- $sorted := partial "posts-sorted.html" (dict "Pages" $posts) -}}
+{{- $dates := slice -}}
+{{- range $sorted -}}
+  {{- $dates = $dates | append (.Date.Format "2006-01-02") -}}
+{{- end -}}
+{{- $columns := site.Params.home.archiveHeatmapColumns | default 13 -}}
+{{- $rows := site.Params.home.archiveHeatmapRows | default 4 -}}
+<div class="home-list-random-sidebar__archives">
+  <h3 class="home-list-random-sidebar__archives-title">
+    <iconify-icon icon="ri:archive-line" class="home-list-random-sidebar__archives-icon" aria-hidden="true"></iconify-icon>
+    <span>归档</span>
+  </h3>
+  <div
+    class="home-list-archive-heatmap"
+    aria-label="文章发布热力图"
+    data-archives-url="{{ `/archives/` | relLangURL }}"
+    data-columns="{{ $columns }}"
+    data-rows="{{ $rows }}"
+    style="--home-list-archive-columns: {{ $columns }}; --home-list-archive-rows: {{ $rows }};"
+  ></div>
+  <script type="application/json" class="home-list-archive-heatmap-data">{{ $dates | jsonify | safeHTML }}</script>
+</div>

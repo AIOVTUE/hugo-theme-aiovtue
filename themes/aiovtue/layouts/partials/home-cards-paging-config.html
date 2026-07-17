@@ -1,0 +1,18 @@
+{{- /*
+  统一读取 cards / list 模式的分页配置（全端共用）。
+  入参：Site；WeeklyFollowHome（可选，默认 true，为 false 时仅读 params.home）
+*/ -}}
+{{- $site := .Site -}}
+{{- $followHome := .WeeklyFollowHome | default true -}}
+{{- $home := default dict $site.Params.home -}}
+{{- $paging := $home.cardsPaging | default $home.mobileCardsPaging | default $home.desktopCardsPaging | default "pagination" -}}
+{{- $batchSize := $home.cardsBatchSize | default $home.mobileCardsBatchSize | default $home.desktopCardsBatchSize | default 10 -}}
+{{- if not $followHome -}}
+  {{- $weekly := default dict $site.Params.weekly -}}
+  {{- $weeklyPaging := $weekly.paging | default "pagination" -}}
+  {{- if not (in (slice "pagination" "loadMore") $weeklyPaging) -}}{{- $weeklyPaging = "pagination" -}}{{- end -}}
+  {{- $paging = $weeklyPaging -}}
+  {{- $batchSize = $weekly.batchSize | default $batchSize -}}
+{{- end -}}
+{{- if not (in (slice "pagination" "loadMore") $paging) -}}{{- $paging = "pagination" -}}{{- end -}}
+{{- return (dict "Paging" $paging "BatchSize" $batchSize) -}}

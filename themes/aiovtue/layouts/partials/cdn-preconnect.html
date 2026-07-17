@@ -1,0 +1,21 @@
+<link rel="preconnect" href="https://code.iconify.design" crossorigin>
+<link rel="dns-prefetch" href="https://code.iconify.design">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+{{- if .IsHome -}}
+  {{- if default true site.Params.hero.enableHitokoto -}}
+<link rel="preconnect" href="https://v1.hitokoto.cn" crossorigin>
+<link rel="dns-prefetch" href="https://v1.hitokoto.cn">
+  {{- end -}}
+{{- end -}}
+{{- $commentProvider := default "twikoo" site.Params.comment.provider -}}
+{{- if eq $commentProvider "waline" -}}
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="dns-prefetch" href="https://unpkg.com">
+  {{- with site.Params.waline.serverURL -}}
+    {{- $host := (urls.Parse .).Host -}}
+    {{- if $host -}}
+<link rel="dns-prefetch" href="//{{ $host }}">
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

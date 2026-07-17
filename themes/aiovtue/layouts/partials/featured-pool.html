@@ -1,0 +1,31 @@
+{{- $posts := .Pages | default slice -}}
+{{- $featuredVisible := .Site.Params.home.featuredCount | default 4 -}}
+{{- if lt $featuredVisible 1 -}}{{- $featuredVisible = 4 -}}{{- end -}}
+{{- $featuredPoolSize := .Site.Params.home.featuredPoolCount | default 12 -}}
+{{- if lt $featuredPoolSize $featuredVisible -}}{{- $featuredPoolSize = $featuredVisible -}}{{- end -}}
+{{- $source := $posts -}}
+{{- $featuredCategories := .Site.Params.home.featuredCategories -}}
+{{- if $featuredCategories -}}
+  {{- $filtered := slice -}}
+  {{- range $posts -}}
+    {{- $pageCats := .Params.categories | default slice -}}
+    {{- if not (reflect.IsSlice $pageCats) -}}{{- $pageCats = slice $pageCats -}}{{- end -}}
+    {{- $matched := false -}}
+    {{- range $featuredCategories -}}
+      {{- if in $pageCats . -}}{{- $matched = true -}}{{- end -}}
+    {{- end -}}
+    {{- if $matched -}}{{- $filtered = $filtered | append . -}}{{- end -}}
+  {{- end -}}
+  {{- $source = $filtered -}}
+{{- end -}}
+{{- $pool := slice -}}
+{{- if gt (len $source) 0 -}}
+  {{- if lt (len $source) $featuredVisible -}}
+    {{- range seq 0 (sub $featuredVisible 1) -}}
+      {{- $pool = $pool | append (index $source (mod . (len $source))) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $pool = first $featuredPoolSize $source -}}
+  {{- end -}}
+{{- end -}}
+{{- return $pool -}}

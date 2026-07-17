@@ -2,10 +2,10 @@
 {{ $posts := where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") }}
 {{ $posts = partial "posts-sorted.html" (dict "Pages" $posts) }}
 {{ $homeLayout := .Site.Params.home.layout | default "cards" }}
-{{ if not (in (slice "cards" "timeline") $homeLayout) }}{{ $homeLayout = "cards" }}{{ end }}
+{{ if not (in (slice "cards" "timeline" "list") $homeLayout) }}{{ $homeLayout = "cards" }}{{ end }}
 {{ $listArchives := eq $homeLayout "timeline" }}
-{{ $mobileCardsList := partial "mobile-cards-list-enabled.html" . }}
-<article class="sakura-page sakura-taxonomy-page sakura-categories-page{{ if $listArchives }} is-list-archives{{ end }}{{ if $mobileCardsList }} is-mobile-cards-list{{ end }}">
+{{ $mobileCardsList := partial "mobile-cards-list-enabled.html" (dict "Site" .Site) }}
+<article class="sakura-page sakura-taxonomy-page sakura-categories-page{{ if $listArchives }} is-list-archives{{ end }}{{ if eq $homeLayout "list" }} is-layout-list{{ end }}{{ if $mobileCardsList }} is-mobile-cards-list{{ end }}">
   {{- partial "page-header.html" . -}}
   <div class="sakura-page-content">
     <p class="sakura-taxonomy-count">共 {{ len .Data.Terms }} 个分类</p>
@@ -31,7 +31,7 @@
       ) -}}
       {{ else }}
       <div class="sakura-post-list">
-        <div class="post-list-container post-list-container--cards{{ if $mobileCardsList }} post-list-container--mobile-list{{ end }}" id="categories-post-list">
+        <div class="post-list-container post-list-container--cards{{ if eq $homeLayout "list" }} post-list-container--desktop-list{{ end }}{{ if $mobileCardsList }} post-list-container--mobile-list{{ end }}" id="categories-post-list">
           {{ range $index, $page := $posts }}
           {{ $cats := slice }}
           {{ range ($page.GetTerms "categories") }}

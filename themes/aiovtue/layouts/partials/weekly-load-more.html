@@ -1,0 +1,43 @@
+{{- $posts := .Posts -}}
+{{- $paginator := .Paginator -}}
+{{- $batchSize := .BatchSize -}}
+{{- $remaining := after (len $paginator.Pages) $posts -}}
+{{- if $remaining -}}
+  {{- $morePosts := slice -}}
+  {{- range $index, $post := $remaining -}}
+    {{- $modifiedDate := partial "post-modified-date.html" $post -}}
+    {{- $cover := partial "post-cover.html" $post -}}
+    {{- $coverSrc := $cover -}}
+    {{- if and $cover (not (or (hasPrefix $cover "http://") (hasPrefix $cover "https://") (hasPrefix $cover "//"))) -}}
+      {{- $coverSrc = $cover | relURL -}}
+    {{- end -}}
+    {{- $lower := lower $cover -}}
+    {{- $tags := $post.Params.tags | default slice -}}
+    {{- if and $tags (not (reflect.IsSlice $tags)) -}}{{- $tags = slice $tags -}}{{- end -}}
+    {{- $cardIndex := add (len $paginator.Pages) $index -}}
+    {{- if eq $paginator.PageNumber 1 -}}
+      {{- $cardIndex = sub $cardIndex 1 -}}
+    {{- end -}}
+    {{- $morePosts = $morePosts | append (dict
+      "title" $post.Title
+      "url" $post.RelPermalink
+      "date" $modifiedDate.display
+      "dateTime" $modifiedDate.datetime
+      "dateOnly" $modifiedDate.dateOnly
+      "dateDay" ($post.Date.Format "02")
+      "dateMonth" (printf "%s月" ($post.Date.Format "01"))
+      "dateYear" ($post.Date.Format "2006")
+      "weekday" (index (slice "日" "一" "二" "三" "四" "五" "六") $post.Date.Weekday)
+      "cover" $coverSrc
+      "coverIsVideo" (or (hasSuffix $lower ".mp4") (hasSuffix $lower ".webm") (hasSuffix $lower ".ogg"))
+      "tags" $tags
+      "issue" ($post.Params.issue | default "")
+      "excerpt" (partial "post-card-excerpt.html" $post)
+      "pinned" (default false $post.Params.pinned)
+      "index" $cardIndex
+    ) -}}
+  {{- end -}}
+  <script type="application/json" id="weekly-more-data" class="weekly-more-data">{{ $morePosts | jsonify }}</script>
+  <div class="weekly-scroll-sentinel" id="weekly-scroll-sentinel" data-batch-size="{{ $batchSize }}" aria-hidden="true"></div>
+  <p class="weekly-load-status" id="weekly-load-status" hidden aria-live="polite"></p>
+{{- end -}}

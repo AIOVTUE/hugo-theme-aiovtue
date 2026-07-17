@@ -1,0 +1,10 @@
+{{- if and (partial "twikoo-visitors-enabled.html" .) .IsPage (eq .Section "posts") -}}
+<p class="sakura-post-header-visitors">
+  <iconify-icon icon="mdi:eye-outline" class="sakura-post-visitors__icon" aria-hidden="true"></iconify-icon>
+  <span class="sakura-post-visitors__label">访问量</span>
+  <span id="twikoo_visitors">0</span>
+</p>
+{{- if eq .Params.comment false -}}
+<div id="twikoo-visitor-mount" class="sakura-twikoo-visitor-mount" hidden></div>
+{{- end -}}
+{{- end -}}

@@ -1,8 +1,9 @@
-export const TWIKOO_COMMENT_PLACEHOLDER = '分享你的想法...'
+export const TWIKOO_COMMENT_PLACEHOLDER = '分享你的想法...' // Waline 默认提示，Twikoo 使用后台 COMMENT_PLACEHOLDER
 export const WALINE_CLIENT_URL = 'https://unpkg.com/@waline/client@3.15.2/dist/waline.js'
 export const TWIKOO_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/twikoo@1.7.12/dist/twikoo.all.min.js'
 
 let twikooScriptPromise = null
+let twikooVisitorObserver = null
 let commentMountGeneration = 0
 const walineInstances = new WeakMap()
 const walinePaths = new WeakMap()
@@ -410,6 +411,12 @@ export function cleanupPageComments() {
   inflightPageCommentMount = null
   twikooMountPromises.clear()
   commentMountGeneration += 1
+  if (twikooVisitorObserver) {
+    twikooVisitorObserver.disconnect()
+    twikooVisitorObserver = null
+  }
+  const visitorMount = document.getElementById('twikoo-visitor-mount')
+  if (visitorMount) delete visitorMount.dataset.twikooVisitorLoaded
   resetCommentRoot(document.getElementById('tcomment'))
   resetCommentRoot(document.getElementById('waline'))
   document.querySelectorAll('.moment-comment-root').forEach(resetCommentRoot)
@@ -423,7 +430,7 @@ export function cleanupPageComments() {
   })
 }
 
-export async function mountTwikoo(root, { path, placeholder = TWIKOO_COMMENT_PLACEHOLDER, onReady } = {}) {
+export async function mountTwikoo(root, { path, placeholder, onReady } = {}) {
   const selector = commentRootSelector(root)
   if (!selector) {
     console.warn('[comments] twikoo root missing id')
@@ -468,13 +475,17 @@ export async function mountTwikoo(root, { path, placeholder = TWIKOO_COMMENT_PLA
         return false
       }
 
-      await twikoo.init({
+      const initOptions = {
         envId,
         el: selector,
         path: resolvedPath,
         lang: 'zh-CN',
-        placeholder,
-      })
+      }
+      if (typeof placeholder === 'string' && placeholder.trim()) {
+        initOptions.placeholder = placeholder.trim()
+      }
+
+      await twikoo.init(initOptions)
       if (generation !== commentMountGeneration || !root.isConnected) return false
 
       root.dataset.sakuraCommentMounted = '1'
@@ -594,7 +605,6 @@ async function mountPageCommentsNow({ onTwikooReady } = {}) {
     if (!root) return
     await mountTwikoo(root, {
       path,
-      placeholder: TWIKOO_COMMENT_PLACEHOLDER,
       onReady: onTwikooReady,
     })
     return
@@ -618,6 +628,42 @@ export function initPageComments(options = {}) {
   }
 }
 
+export function initTwikooVisitors() {
+  const counter = document.getElementById('twikoo_visitors')
+  if (!counter) return
+  if (getCommentProvider() !== 'twikoo') return
+  if (!getTwikooEnvId()) return
+
+  if (document.getElementById('page-comment-section') && document.getElementById('tcomment')) {
+    return
+  }
+
+  const mount = document.getElementById('twikoo-visitor-mount')
+  if (!mount) return
+  if (mount.dataset.twikooVisitorLoaded === '1') return
+
+  const loadVisitors = () => {
+    if (mount.dataset.twikooVisitorLoaded === '1') return
+    mount.dataset.twikooVisitorLoaded = '1'
+    if (twikooVisitorObserver) {
+      twikooVisitorObserver.disconnect()
+      twikooVisitorObserver = null
+    }
+    void mountTwikoo(mount, { path: window.location.pathname })
+  }
+
+  if ('IntersectionObserver' in window) {
+    if (twikooVisitorObserver) twikooVisitorObserver.disconnect()
+    twikooVisitorObserver = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) loadVisitors()
+    }, { rootMargin: '120px' })
+    twikooVisitorObserver.observe(counter)
+    return
+  }
+
+  loadVisitors()
+}
+
 bindPageCommentVisibleListener()
 
 export async function mountMomentCommentPanel(panel) {
@@ -626,7 +672,9 @@ export async function mountMomentCommentPanel(panel) {
 
   const provider = panel.dataset.commentProvider || getCommentProvider()
   const path = panel.dataset.commentPath || window.location.pathname
-  const placeholder = root.dataset.placeholder || TWIKOO_COMMENT_PLACEHOLDER
+  const placeholder = provider === 'waline'
+    ? (root.dataset.placeholder || TWIKOO_COMMENT_PLACEHOLDER)
+    : undefined
 
   return mountCommentRoot(root, { provider, path, placeholder })
 }

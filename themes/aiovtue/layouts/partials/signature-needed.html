@@ -1,0 +1,8 @@
+{{- $footer := default true site.Params.signature.footerEnable -}}
+{{- $postCopyright := and .IsPage (eq .Section "posts") (default true site.Params.signature.postCopyrightEnable) -}}
+{{- $inlineInContent := false -}}
+{{- if .IsPage -}}
+  {{- $raw := .RawContent | default "" -}}
+  {{- $inlineInContent = or (findRE `\[签名\]` $raw) (findRE `!\[签名\]` $raw) (findRE `signature:|#signature` $raw) -}}
+{{- end -}}
+{{- return (or $footer $postCopyright $inlineInContent) -}}

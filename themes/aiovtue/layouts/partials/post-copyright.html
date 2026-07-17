@@ -28,7 +28,7 @@
       <strong>本文作者：</strong>
       {{- if default true .Site.Params.signature.postCopyrightEnable -}}
       <span class="post-copyright-author-signature">
-        {{- partial "signature-inline.html" (dict "autoplay" false) -}}
+        {{- partial "signature-inline.html" (dict) -}}
       </span>
       {{- else -}}
       <span class="post-copyright-author-name"> {{ .Site.Params.author.name }}</span>

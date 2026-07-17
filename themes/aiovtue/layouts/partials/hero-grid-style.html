@@ -1,0 +1,7 @@
+{{- if eq (.Site.Params.hero.style | default `dot`) `grid` -}}
+{{- $grid := .Site.Params.hero.grid | default dict -}}
+{{- $size := default 28 $grid.size -}}
+{{- $lineOpacity := default 0.14 $grid.lineOpacity -}}
+{{- $lineOpacityDark := default 0.08 $grid.lineOpacityDark -}}
+<style>html.hero-style-grid{--sakura-hero-grid-size:{{ $size }}px;--sakura-hero-grid-line:oklch(0% 0 0 / {{ $lineOpacity }})}html.dark.hero-style-grid{--sakura-hero-grid-line:oklch(100% 0 0 / {{ $lineOpacityDark }})}</style>
+{{- end -}}

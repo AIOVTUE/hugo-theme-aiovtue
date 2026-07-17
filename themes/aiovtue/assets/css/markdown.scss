@@ -34,6 +34,19 @@ html.dark {
     rgb(31 34 40) 100%
   );
 
+  .prose [class~='lead'] {
+    color: var(--sakura-color-text-muted);
+  }
+
+  .prose ol > li::before,
+  .prose figure figcaption {
+    color: var(--sakura-color-text-muted);
+  }
+
+  .prose a code {
+    color: var(--sakura-color-text-deep);
+  }
+
   .markdown-body.prose img {
     border-color: rgba(255, 255, 255, 0.22);
   }
@@ -43,8 +56,8 @@ html.dark {
   }
 
   .markdown-body.prose .sakura-table-wrap {
-    background: color-mix(in srgb, var(--sakura-color-primary) 4%, #1a1a1a);
-    border-color: color-mix(in srgb, var(--sakura-color-primary) 28%, rgba(255, 255, 255, 0.12));
+    background: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .markdown-body.prose .sakura-table-wrap table {
@@ -52,12 +65,25 @@ html.dark {
     border: none;
   }
 
+  .markdown-body.prose table {
+    background: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .markdown-body.prose thead {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .markdown-body.prose th {
+    border-bottom-color: rgba(255, 255, 255, 0.14);
+  }
+
   .markdown-body.prose tbody tr:nth-child(even) {
-    background: color-mix(in srgb, var(--sakura-color-primary) 8%, transparent);
+    background: rgba(255, 255, 255, 0.04);
   }
 
   .markdown-body.prose tbody tr:hover {
-    background: color-mix(in srgb, var(--sakura-color-primary) 14%, transparent);
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .markdown-body.prose > pre {
@@ -91,7 +117,7 @@ html.dark {
   }
 
   .markdown-body div[class*='language-'].code-foldable > button.code-block-unfold-btn {
-    --code-fold-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath fill='%23E5A7A9' d='m12 16.175l3.9-3.875q.275-.275.688-.288t.712.288q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.063T11.3 18.3l-4.6-4.6q-.275-.275-.288-.687T6.7 12.3q.275-.275.7-.275t.7.275l3.9 3.875Zm0-6L15.9 6.3q.275-.275.688-.287t.712.287q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.062T11.3 12.3L6.7 7.7q-.275-.275-.288-.688T6.7 6.3q.275-.275.7-.275t.7.275l3.9 3.875Z'/%3E%3C/svg%3E");
+    --code-fold-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath fill='%23a3a3a3' d='m12 16.175l3.9-3.875q.275-.275.688-.288t.712.288q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.063T11.3 18.3l-4.6-4.6q-.275-.275-.288-.687T6.7 12.3q.275-.275.7-.275t.7.275l3.9 3.875Zm0-6L15.9 6.3q.275-.275.688-.287t.712.287q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.062T11.3 12.3L6.7 7.7q-.275-.275-.288-.688T6.7 6.3q.275-.275.7-.275t.7.275l3.9 3.875Z'/%3E%3C/svg%3E");
     background-color: var(--va-code-block-bg);
     background-image: var(--va-code-fold-gradient);
 
@@ -327,7 +353,7 @@ html.dark {
     &::before {
       content: "";
       position: absolute;
-      left: 0;
+      left: 0.2em;
       top: 0.5lh;
       width: 0.4em;
       height: 0.4em;
@@ -743,7 +769,7 @@ html.dark {
     border-left: 4px solid var(--sakura-color-primary);
     margin: 1em 0;
     padding: 0.5em 1em;
-    background: color-mix(in srgb, var(--va-c-primary) 6%, transparent);
+    background: color-mix(in srgb, var(--va-c-primary) 6%, var(--sakura-color-background));
     font-style: normal;
     quotes: none;
 
@@ -760,8 +786,8 @@ html.dark {
     margin: 1.1em 0;
     overflow-x: auto;
     border-radius: 8px;
-    border: 1px solid color-mix(in srgb, var(--sakura-color-primary) 22%, var(--sakura-color-divider));
-    background: color-mix(in srgb, var(--sakura-color-primary) 2%, #fff);
+    border: 1px solid var(--sakura-color-divider);
+    background: #fff;
     @include sakura-content-scrollbar;
   }
 
@@ -791,21 +817,21 @@ html.dark {
     table-layout: auto;
     font-size: 0.92em;
     line-height: 1.55;
-    border: 1px solid color-mix(in srgb, var(--sakura-color-primary) 22%, var(--sakura-color-divider));
+    border: 1px solid var(--sakura-color-divider);
     border-radius: 8px;
     overflow: visible;
-    background: color-mix(in srgb, var(--sakura-color-primary) 2%, #fff);
+    background: #fff;
   }
 
   thead {
-    background: color-mix(in srgb, var(--sakura-color-primary) 14%, transparent);
+    background: #f6f8fa;
   }
 
   th {
     color: var(--sakura-color-text-deep);
     font-weight: 600;
     padding: 0.65em 0.9em;
-    border-bottom: 2px solid color-mix(in srgb, var(--sakura-color-primary) 32%, transparent);
+    border-bottom: 2px solid var(--sakura-color-divider);
     white-space: normal;
     word-break: break-word;
     overflow-wrap: anywhere;
@@ -846,11 +872,11 @@ html.dark {
   }
 
   tbody tr:nth-child(even) {
-    background: color-mix(in srgb, var(--sakura-color-primary) 5%, transparent);
+    background: rgba(0, 0, 0, 0.02);
   }
 
   tbody tr:hover {
-    background: color-mix(in srgb, var(--sakura-color-primary) 10%, transparent);
+    background: rgba(0, 0, 0, 0.04);
   }
 
   th[align="left"],
@@ -891,7 +917,7 @@ html.dark {
     font-family: var(--va-font-mono);
     font-size: 0.92em;
     font-weight: 500;
-    color: var(--sakura-color-action);
+    color: var(--sakura-color-text-deep);
   }
 
   table code {
@@ -1158,7 +1184,7 @@ html.dark .markdown-body div[class*="language-"]::after {
 }
 
 .markdown-body div[class*='language-'].code-foldable > button.code-block-unfold-btn {
-  --code-fold-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath fill='%23DF9193' d='m12 16.175l3.9-3.875q.275-.275.688-.288t.712.288q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.063T11.3 18.3l-4.6-4.6q-.275-.275-.288-.687T6.7 12.3q.275-.275.7-.275t.7.275l3.9 3.875Zm0-6L15.9 6.3q.275-.275.688-.287t.712.287q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.062T11.3 12.3L6.7 7.7q-.275-.275-.288-.688T6.7 6.3q.275-.275.7-.275t.7.275l3.9 3.875Z'/%3E%3C/svg%3E");
+  --code-fold-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath fill='%23888888' d='m12 16.175l3.9-3.875q.275-.275.688-.288t.712.288q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.063T11.3 18.3l-4.6-4.6q-.275-.275-.288-.687T6.7 12.3q.275-.275.7-.275t.7.275l3.9 3.875Zm0-6L15.9 6.3q.275-.275.688-.287t.712.287q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062q-.2 0-.375-.062T11.3 12.3L6.7 7.7q-.275-.275-.288-.688T6.7 6.3q.275-.275.7-.275t.7.275l3.9 3.875Z'/%3E%3C/svg%3E");
 
   display: none !important;
   position: absolute;
@@ -1189,7 +1215,7 @@ html.dark .markdown-body div[class*="language-"]::after {
 
   &:hover::before {
     transform: scale(1.12);
-    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--va-c-primary) 55%, transparent));
+    filter: drop-shadow(0 0 3px color-mix(in srgb, #000 35%, transparent));
   }
 
   &.is-expanded {

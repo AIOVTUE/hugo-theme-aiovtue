@@ -1,0 +1,6 @@
+{{- $page := . -}}
+{{- $excerpt := $page.Description -}}
+{{- if not $excerpt -}}{{- $excerpt = $page.Params.ai -}}{{- end -}}
+{{- if not $excerpt -}}{{- $excerpt = $page.Summary -}}{{- end -}}
+{{- if not $excerpt -}}{{- $excerpt = $page.Plain -}}{{- end -}}
+{{- return ($excerpt | plainify | truncate 160) -}}

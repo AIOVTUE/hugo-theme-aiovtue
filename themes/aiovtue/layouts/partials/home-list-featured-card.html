@@ -1,0 +1,11 @@
+{{- $page := .Page -}}
+{{- $cover := partial "post-cover.html" $page -}}
+<a class="home-list-featured-card" href="{{ $page.RelPermalink }}" aria-label="阅读全文：{{ $page.Title }}">
+  <div class="home-list-featured-card__cover">
+    {{- partial "cover-list-media.html" (dict "cover" $cover "title" $page.Title "class" "sakura-lazy-img") -}}
+  </div>
+  <div class="home-list-featured-card__body">
+    <h3 class="home-list-featured-card__title">{{ $page.Title }}</h3>
+    <p class="home-list-featured-card__excerpt">{{ partial "post-card-excerpt.html" $page }}</p>
+  </div>
+</a>

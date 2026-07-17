@@ -1,0 +1,27 @@
+{{- $allowed := slice "cards" "list" "timeline" -}}
+{{- $rawPool := .Site.Params.home.layouts -}}
+{{- $pool := slice -}}
+{{- if $rawPool -}}
+  {{- range $rawPool -}}
+    {{- if and (in $allowed .) (not (in $pool .)) -}}
+      {{- $pool = $pool | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $fallback := .Site.Params.home.layout | default "cards" -}}
+{{- if not (in $allowed $fallback) -}}{{- $fallback = "cards" -}}{{- end -}}
+{{- if not $pool -}}
+  {{- $pool = slice $fallback -}}
+{{- end -}}
+{{- $primary := $fallback -}}
+{{- if not (in $pool $primary) -}}{{- $primary = index $pool 0 -}}{{- end -}}
+{{- $randomSwitch := .Site.Params.home.layoutRandom | default false -}}
+{{- $randomEnabled := and $randomSwitch (ge (len $pool) 2) -}}
+{{- $listColumnsRandom := and $randomSwitch (in $pool "list") -}}
+{{- $variantRandomEnabled := or $randomEnabled $listColumnsRandom -}}
+{{- return (dict
+  "pool" $pool
+  "listColumnsRandom" $listColumnsRandom
+  "variantRandomEnabled" $variantRandomEnabled
+  "primary" $primary
+) -}}

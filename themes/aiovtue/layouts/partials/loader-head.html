@@ -132,7 +132,7 @@ html.dark #va-fouc-loader__text{color:color-mix(in srgb,{{ $primary }} 88%,#eee)
   }
 
   function stylesReady() {
-    var links = document.querySelectorAll('link[rel="stylesheet"]')
+    var links = document.querySelectorAll('link[rel="stylesheet"]:not([data-sakura-page-style])')
     for (var i = 0; i < links.length; i++) {
       var href = links[i].href || ''
       if (/waline|unpkg\.com\/@waline/i.test(href)) continue
