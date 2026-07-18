@@ -179,6 +179,39 @@
   }
 
   .tk-meta-input .el-input-group__prepend {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: auto;
+    min-width: 0;
+    padding: 0 2px;
+    border: none;
+    background: transparent;
+    color: #c0c4cc;
+    font-size: 0;
+    line-height: 36px;
+    white-space: nowrap;
+  }
+
+  .tk-meta-input > .el-input:has(input[name="nick"]) .el-input-group__prepend::before,
+  .tk-meta-input > .el-input:nth-child(1) .el-input-group__prepend::before {
+    content: '昵称';
+    font-size: 14px;
+  }
+
+  .tk-meta-input > .el-input:has(input[name="mail"]) .el-input-group__prepend::before,
+  .tk-meta-input > .el-input:nth-child(2) .el-input-group__prepend::before {
+    content: '邮箱';
+    font-size: 14px;
+  }
+
+  .tk-meta-input > .el-input:has(input[name="link"]) .el-input-group__prepend::before,
+  .tk-meta-input > .el-input:nth-child(3) .el-input-group__prepend::before {
+    content: '网站';
+    font-size: 14px;
+  }
+
+  .tk-meta-input .el-input:not(:has(.el-input__inner:placeholder-shown)) .el-input-group__prepend {
     display: none;
   }
 
@@ -194,7 +227,7 @@
   }
 
   .tk-meta-input .el-input__inner::placeholder {
-    color: #c0c4cc;
+    color: transparent;
   }
 
   .tk-meta-input .el-input__inner:hover,
