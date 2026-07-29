@@ -1,39 +1,27 @@
 {{ $page := . }}
+{{ $photos := $page.Params.photos | default slice }}
+{{ $stackPhotos := slice }}
+{{ with $page.Params.cover }}
+  {{ $stackPhotos = $stackPhotos | append . }}
+{{ end }}
+{{ range $photos }}
+  {{ with .url }}
+    {{ if ne . $page.Params.cover }}{{ $stackPhotos = $stackPhotos | append . }}{{ end }}
+  {{ end }}
+{{ end }}
 <li class="album-grid__item">
-  <a class="album-grid__card" href="{{ $page.RelPermalink }}">
-    {{ if $page.Params.cover }}
-    {{- partial "cover-list-media.html" (dict "cover" $page.Params.cover "title" $page.Title "class" "album-grid__cover sakura-lazy-img") -}}
-    {{ else }}
-    <div class="album-grid__cover album-grid__cover--placeholder" aria-hidden="true"><span>📷</span></div>
+  <a class="album-grid__card" href="{{ $page.RelPermalink }}" aria-label="{{ $page.Title }}">
+    <div class="album-grid__stack" aria-hidden="true">
+    {{ range $index, $photo := first 3 $stackPhotos }}
+      {{- partial "cover-list-media.html" (dict "cover" $photo "title" $page.Title "class" (printf "album-grid__cover album-grid__cover--stack album-grid__cover--stack-%d sakura-lazy-img" (add $index 1))) -}}
     {{ end }}
-    <div class="album-grid__shade" aria-hidden="true"></div>
-    {{ if $page.Params.photos }}
-    <span class="album-grid__count">{{ len $page.Params.photos }} 张照片</span>
+    {{ if not $stackPhotos }}
+      <div class="album-grid__cover album-grid__cover--placeholder album-grid__cover--stack album-grid__cover--stack-1"><span>📷</span></div>
     {{ end }}
-    {{ if $page.Params.encrypted }}
-    <span class="album-grid__lock" title="加密相册">🔒</span>
-    {{ end }}
-    <div class="album-grid__content">
+    </div>
+    <div class="album-grid__caption">
       <h2 class="album-grid__title">{{ $page.Title }}</h2>
       {{ with $page.Params.desc }}<p class="album-grid__desc">{{ . }}</p>{{ end }}
-      {{ with $page.Params.location }}
-      <div class="album-grid__meta">
-        <span class="album-grid__location">
-          <svg class="album-grid__pin" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 21s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11Z" />
-            <circle cx="12" cy="10" r="2.5" />
-          </svg>
-          {{ . }}
-        </span>
-      </div>
-      {{ end }}
-      {{ with $page.Params.tags }}
-      <div class="album-grid__tags">
-        {{ range . }}
-        <span class="album-grid__tag">{{ . }}</span>
-        {{ end }}
-      </div>
-      {{ end }}
     </div>
   </a>
 </li>

@@ -1,0 +1,16 @@
+{{- /*
+  Inline Markdown fragment for notice lines (no wrapper).
+  Bare domains / http(s) URLs without Markdown stay auto-linked.
+*/ -}}
+{{- $line := strings.TrimSpace (. | default "") -}}
+{{- if $line -}}
+  {{- $hasMd := gt (len (findRE `[\[\]!*_\x60~]` $line)) 0 -}}
+  {{- if and (not $hasMd) (or (hasPrefix $line "http://") (hasPrefix $line "https://")) -}}
+    {{- $line = printf "[%s](%s)" $line $line -}}
+  {{- else if and (not $hasMd) (findRE `(?i)^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+(/[^\s]*)?$` $line) -}}
+    {{- $line = printf "[%s](https://%s)" $line $line -}}
+  {{- end -}}
+  {{- $html := $line | markdownify -}}
+  {{- $html = $html | replaceRE `(?s)^\s*<p>(.*)</p>\s*$` `$1` -}}
+  {{ $html | safeHTML }}
+{{- end -}}

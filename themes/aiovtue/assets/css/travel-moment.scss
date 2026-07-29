@@ -19,11 +19,13 @@
   }
 
   &__avatar {
+    display: block;
     width: 42px;
     height: 42px;
     border-radius: 6px;
     object-fit: cover;
     background: color-mix(in srgb, var(--va-c-primary) 10%, var(--sakura-color-background));
+    pointer-events: none;
   }
 
   &__main {

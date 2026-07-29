@@ -1,4 +1,6 @@
 {{- $cover := partial "post-cover.html" . -}}
+{{- $categories := .Params.categories -}}
+{{- $tags := .Params.tags -}}
 <header class="sakura-page-header sakura-post-header{{ if $cover }} has-cover{{ end }}" data-page="{{ .Section }}">
   {{- partial "cover-media.html" (dict "cover" $cover "title" .Title "coverClass" "sakura-page-header__cover" "loading" "eager" "fetchPriority" "high" "noLazyClass" true) -}}
   <div class="sakura-page-header__inner sakura-header-container">
@@ -8,40 +10,52 @@
       </span>
     </h1>
     <div class="sakura-post-header-meta sakura-post-meta">
-      <span class="sakura-post-date posted-time post-time">
-        <span class="sakura-post-date__inner" title="发表于{{ .Date.Format `2006-01-02` }}">
-          <iconify-icon icon="mdi:clock-outline" class="sakura-post-date__icon" aria-hidden="true"></iconify-icon>
-          <span class="sakura-post-date__label">发表于</span>
-          <time datetime="{{ .Date.Format `2006-01-02` }}" itemprop="datePublished">{{ .Date.Format `2006-01-02` }}</time>
+      <div class="sakura-post-header-meta__row sakura-post-header-meta__row--date">
+        <span class="sakura-post-date posted-time post-time">
+          <span class="sakura-post-date__inner" title="发表于{{ .Date.Format `2006-01-02` }}">
+            <iconify-icon icon="mdi:clock-outline" class="sakura-post-date__icon" aria-hidden="true"></iconify-icon>
+            <span class="sakura-post-date__label">发表于</span>
+            <time datetime="{{ .Date.Format `2006-01-02` }}" itemprop="datePublished">{{ .Date.Format `2006-01-02` }}</time>
+          </span>
         </span>
-      </span>
-      {{- with .Params.categories -}}
-      <span class="sakura-post-header-meta__sep"> · </span>
-      <span class="sakura-post-header-meta__item">分类：
-        {{- if reflect.IsSlice . -}}
-        {{- range $i, $c := . -}}
-        {{- if $i }} / {{ end -}}
-        <a href="{{ `/categories/` | relLangURL }}?category={{ $c | urlquery }}">{{ $c }}</a>
+      </div>
+      {{- if or $categories $tags -}}
+      <div class="sakura-post-header-meta__row sakura-post-header-meta__row--taxonomy">
+        {{- with $categories -}}
+        <span class="sakura-post-header-meta__item">分类：
+          {{- if reflect.IsSlice . -}}
+          {{- range $i, $c := . -}}
+          {{- if $i }} / {{ end -}}
+          <a href="{{ `/categories/` | relLangURL }}?category={{ $c | urlquery }}">{{ $c }}</a>
+          {{- end -}}
+          {{- else -}}
+          <a href="{{ `/categories/` | relLangURL }}?category={{ . | urlquery }}">{{ . }}</a>
+          {{- end -}}
+        </span>
         {{- end -}}
-        {{- else -}}
-        <a href="{{ `/categories/` | relLangURL }}?category={{ . | urlquery }}">{{ . }}</a>
+        {{- if and $categories $tags -}}
+        <span class="sakura-post-header-meta__sep"> · </span>
         {{- end -}}
-      </span>
-      {{- end -}}
-      {{- with .Params.tags -}}
-      <span class="sakura-post-header-meta__sep"> · </span>
-      <span class="sakura-post-header-meta__item">标签：
-        {{- if reflect.IsSlice . -}}
-        {{- range $i, $t := . -}}
-        {{- if $i }}, {{ end -}}
-        <a href="{{ `/tags/` | relLangURL }}?tag={{ $t | urlquery }}">#{{ $t }}</a>
+        {{- with $tags -}}
+        <span class="sakura-post-header-meta__item">标签：
+          {{- if reflect.IsSlice . -}}
+          {{- range $i, $t := . -}}
+          {{- if $i }}, {{ end -}}
+          <a href="{{ `/tags/` | relLangURL }}?tag={{ $t | urlquery }}">{{ $t }}</a>
+          {{- end -}}
+          {{- else -}}
+          <a href="{{ `/tags/` | relLangURL }}?tag={{ . | urlquery }}">{{ . }}</a>
+          {{- end -}}
+        </span>
         {{- end -}}
-        {{- else -}}
-        <a href="{{ `/tags/` | relLangURL }}?tag={{ . | urlquery }}">#{{ . }}</a>
-        {{- end -}}
-      </span>
+      </div>
       {{- end -}}
     </div>
+    {{- if and .IsPage (eq .Section "posts") -}}
+    {{- $reading := .ReadingTime -}}
+    {{- if lt $reading 1 -}}{{- $reading = 1 -}}{{- end -}}
+    <p class="sakura-post-header-reading">本文字数：{{ .WordCount }}&nbsp;&nbsp;阅读时长：{{ $reading }}分钟</p>
+    {{- end -}}
     {{- partial "post-twikoo-visitors.html" . -}}
   </div>
 </header>

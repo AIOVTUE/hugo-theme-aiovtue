@@ -107,13 +107,27 @@ function syncHomePostsShell(root, variant) {
   if (!root || !variant) return
   const layout = variant.dataset.layout || root.dataset.homeLayout || 'cards'
   root.dataset.homeLayout = layout
-  root.classList.remove('is-layout-cards', 'is-layout-list', 'is-layout-timeline', 'is-mobile-cards-list', 'is-desktop-list-double')
+  root.classList.remove(
+    'is-layout-cards',
+    'is-layout-list',
+    'is-layout-timeline',
+    'is-mobile-cards-list',
+    'is-desktop-list-double',
+    'is-desktop-list-item-cards',
+  )
   root.classList.add(`is-layout-${layout}`)
   if (variant.dataset.mobileCardsList === 'true') {
     root.classList.add('is-mobile-cards-list')
   }
   if (layout === 'list' && variant.dataset.listColumns === 'double') {
     root.classList.add('is-desktop-list-double')
+  }
+  if (
+    layout === 'list' &&
+    variant.dataset.listColumns !== 'double' &&
+    root.dataset.desktopListItemStyle === 'cards'
+  ) {
+    root.classList.add('is-desktop-list-item-cards')
   }
 }
 
@@ -200,7 +214,8 @@ function mountHomeListFeatured() {
   const postList = queryHome('.home-post-list')
   if (!featured || !postList) return
   if (postList.contains(featured)) return
-  postList.insertBefore(featured, postList.firstChild)
+  const ticker = postList.querySelector(':scope > .home-mobile-notice-ticker')
+  postList.insertBefore(featured, ticker ? ticker.nextSibling : postList.firstChild)
   mount.remove()
 }
 
@@ -1238,6 +1253,14 @@ export function initHomeListFeatured() {
   const viewport = root?.querySelector('.home-list-featured__viewport')
   const track = root?.querySelector('.home-list-featured-track')
   if (!root || !viewport || !track) return
+
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  if (
+    (isMobile && root.classList.contains('is-hide-mobile')) ||
+    (!isMobile && root.classList.contains('is-hide-desktop'))
+  ) {
+    return
+  }
 
   const cards = [...track.querySelectorAll('.home-list-featured-card')]
   if (!cards.length) return

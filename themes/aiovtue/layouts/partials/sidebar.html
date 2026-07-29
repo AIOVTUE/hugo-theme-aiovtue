@@ -1,7 +1,11 @@
 <aside class="sakura-sidebar left" id="sidebar" aria-hidden="true">
   <div class="site-info">
     <a href="{{ `/about/` | relLangURL }}" class="site-author-avatar">
-      <img class="rounded-full" src="{{ .Site.Params.author.avatar }}" alt="avatar">
+      {{- partial "author-avatar.html" (dict
+        "class" "rounded-full"
+        "alt" "avatar"
+        "play" true
+      ) -}}
       <span class="site-author-status" title="{{ .Site.Params.author.statusMessage }}">{{ .Site.Params.author.statusEmoji }}</span>
     </a>
     <div class="site-author-name">

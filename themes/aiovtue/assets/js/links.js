@@ -286,9 +286,14 @@ export function initLinksPreviewShuffle() {
   const root = document.querySelector('.links-preview')
   if (!root) return
 
-  const shuffleEnabled = root.dataset.shuffleGroups !== 'false'
+  const rootShuffle = root.dataset.shuffleGroups !== 'false'
 
   root.querySelectorAll('.links-preview-group .links-preview-grid').forEach((grid) => {
+    const group = grid.closest('.links-preview-group')
+    const raw = group?.dataset.shuffle
+    const shuffleEnabled =
+      raw === 'true' ? true : raw === 'false' ? false : rootShuffle
+
     const items = [...grid.children].filter((el) => el.matches('.links-preview-item'))
     const pinned = items.filter((el) => el.dataset.pinLast === 'true')
     let shuffleable = items.filter((el) => el.dataset.pinLast !== 'true')

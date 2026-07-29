@@ -14,7 +14,14 @@
     <div id="va-fouc-loader__spinner">
       <div id="va-fouc-loader__ring"></div>
       {{- with $avatar }}
-      <img id="va-fouc-loader__avatar" src="{{ if hasPrefix . `http` }}{{ . }}{{ else }}{{ . | relURL }}{{ end }}" alt="" decoding="async" onerror="this.remove()">
+      {{- partial "author-avatar.html" (dict
+        "src" .
+        "id" "va-fouc-loader__avatar"
+        "alt" ""
+        "play" true
+        "loading" "eager"
+        "onerrorRemove" true
+      ) -}}
       {{- end }}
     </div>
     <div id="va-fouc-loader__dots"><span></span><span></span><span></span></div>

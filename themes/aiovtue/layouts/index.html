@@ -10,10 +10,15 @@
 {{ $timelineBatchSize := .Site.Params.home.timelineBatchSize | default 10 }}
 {{ $desktopListColumns := .Site.Params.home.desktopListColumns | default "single" }}
 {{ if not (in (slice "single" "double") $desktopListColumns) }}{{ $desktopListColumns = "single" }}{{ end }}
+{{ $desktopListItemStyle := .Site.Params.home.desktopListItemStyle | default "cards" }}
+{{ if not (in (slice "cards" "list") $desktopListItemStyle) }}{{ $desktopListItemStyle = "cards" }}{{ end }}
 {{ $mobileCardsListCards := partial "mobile-cards-list-enabled.html" (dict "Site" .Site "HomeLayout" "cards") }}
 {{ $mobileCardsListList := partial "mobile-cards-list-enabled.html" (dict "Site" .Site "HomeLayout" "list") }}
 {{ $featuredPool := slice -}}
-{{- if in $layoutPool.pool "list" -}}
+{{- $homeParams := .Site.Params.home | default dict -}}
+{{- $featuredDesktop := partial "bool-param.html" (dict "Param" "home.featuredDesktop" "Map" $homeParams "Key" "featuredDesktop" "Default" true) -}}
+{{- $featuredMobile := partial "bool-param.html" (dict "Param" "home.featuredMobile" "Map" $homeParams "Key" "featuredMobile" "Default" true) -}}
+{{- if and (in $layoutPool.pool "list") (or $featuredDesktop $featuredMobile) -}}
   {{- $featuredPool = partial "featured-pool.html" (dict "Pages" $posts "Site" .Site) -}}
 {{- end -}}
 {{ $sharedCtx := dict
@@ -28,6 +33,7 @@
 {{ $shellClasses := printf "is-layout-%s" $layoutPool.primary }}
 {{ if eq $layoutPool.primary "list" }}
   {{ if eq $desktopListColumns "double" }}{{ $shellClasses = printf "%s is-desktop-list-double" $shellClasses }}{{ end }}
+  {{ if and (eq $desktopListColumns "single") (eq $desktopListItemStyle "cards") }}{{ $shellClasses = printf "%s is-desktop-list-item-cards" $shellClasses }}{{ end }}
   {{ if $mobileCardsListList }}{{ $shellClasses = printf "%s is-mobile-cards-list" $shellClasses }}{{ end }}
 {{ else if eq $layoutPool.primary "cards" }}
   {{ if $mobileCardsListCards }}{{ $shellClasses = printf "%s is-mobile-cards-list" $shellClasses }}{{ end }}
@@ -40,6 +46,7 @@
     data-home-layout="{{ $layoutPool.primary }}"
     data-layout-primary="{{ $layoutPool.primary }}"
     data-list-columns-primary="{{ $desktopListColumns }}"
+    data-desktop-list-item-style="{{ $desktopListItemStyle }}"
     data-layout-random="{{ $layoutPool.variantRandomEnabled }}"
     data-mobile-cards-layout="{{ .Site.Params.home.mobileCardsLayout | default "stack" }}"
     data-cards-paging="{{ $cardsPaging }}"

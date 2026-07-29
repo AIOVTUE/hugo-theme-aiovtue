@@ -4,7 +4,6 @@ import { preservePjaxHistoryState, parseJsonData } from './utils.js'
 import { initLazyImages } from './lazy-images.js'
 import { refreshMobileCardsListPage } from './home.js'
 
-const ECHARTS_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js'
 let echartsScriptPromise = null
 
 function normalizeCategory(value) {
@@ -65,8 +64,13 @@ function loadEchartsScript() {
   if (window.echarts?.init) return Promise.resolve(window.echarts)
   if (echartsScriptPromise) return echartsScriptPromise
 
+  const chartEl = document.querySelector('[data-echarts-url]')
+  const scriptUrl = chartEl?.dataset.echartsUrl
+  if (!scriptUrl) return Promise.reject(new Error('echarts local url missing'))
+
+  const resolvedScriptUrl = new URL(scriptUrl, window.location.href).href
   echartsScriptPromise = new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${ECHARTS_SCRIPT_URL}"]`)
+    const existing = Array.from(document.scripts).find((item) => item.src === resolvedScriptUrl)
     if (existing) {
       if (window.echarts?.init) {
         resolve(window.echarts)
@@ -78,7 +82,7 @@ function loadEchartsScript() {
     }
 
     const script = document.createElement('script')
-    script.src = ECHARTS_SCRIPT_URL
+    script.src = scriptUrl
     script.defer = true
     script.onload = () => resolve(window.echarts)
     script.onerror = () => reject(new Error('echarts load failed'))

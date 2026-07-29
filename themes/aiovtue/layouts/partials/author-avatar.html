@@ -1,0 +1,59 @@
+{{- /*
+  Author avatar: supports image and video (.mp4 / .webm / .ogg).
+  Dict keys:
+    src      — avatar URL (default: site.Params.author.avatar)
+    alt      — img alt text
+    class    — CSS class on media element
+    id       — optional element id
+    width    — optional width attr
+    height   — optional height attr
+    loading  — img loading attr (default lazy)
+    play     — true: autoplay muted loop (sidebar / loader)
+               false/omitted: static first frame like an image (moments)
+    onerrorRemove — if true, emit onerror="this.remove()" (loader)
+*/ -}}
+{{- $src := .src | default site.Params.author.avatar | default (site.Params.favicon | default `/favicon.png`) -}}
+{{- $src = strings.TrimSpace $src -}}
+{{- if and $src (not (or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "//"))) -}}
+  {{- if not (hasPrefix $src "/") -}}
+    {{- $src = printf "/%s" $src -}}
+  {{- end -}}
+{{- end -}}
+{{- $href := $src -}}
+{{- if and $href (not (or (hasPrefix $href "http://") (hasPrefix $href "https://") (hasPrefix $href "//"))) -}}
+  {{- $href = $href | relURL -}}
+{{- end -}}
+{{- $lower := lower $src -}}
+{{- $isVideo := or (hasSuffix $lower ".mp4") (hasSuffix $lower ".webm") (hasSuffix $lower ".ogg") -}}
+{{- $class := .class | default "" -}}
+{{- $alt := .alt | default (site.Params.author.name | default "avatar") -}}
+{{- $play := default false .play -}}
+{{- $onerrorRemove := default false .onerrorRemove -}}
+{{- if $isVideo -}}
+<video
+  {{- with $class }} class="{{ . }}"{{ end }}
+  {{- with .id }} id="{{ . }}"{{ end }}
+  src="{{ $href }}"
+  muted
+  playsinline
+  preload="metadata"
+  disablepictureinpicture
+  {{- if $play }} autoplay loop{{ end }}
+  {{- with .width }} width="{{ . }}"{{ end }}
+  {{- with .height }} height="{{ . }}"{{ end }}
+  aria-hidden="true"
+  {{- if $onerrorRemove }} onerror="this.remove()"{{ end -}}
+></video>
+{{- else -}}
+<img
+  {{- with $class }} class="{{ . }}"{{ end }}
+  {{- with .id }} id="{{ . }}"{{ end }}
+  src="{{ $href }}"
+  alt="{{ $alt }}"
+  {{- with .width }} width="{{ . }}"{{ end }}
+  {{- with .height }} height="{{ . }}"{{ end }}
+  loading="{{ .loading | default `lazy` }}"
+  decoding="async"
+  {{- if $onerrorRemove }} onerror="this.remove()"{{ end -}}
+>
+{{- end -}}

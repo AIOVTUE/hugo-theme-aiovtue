@@ -5,5 +5,6 @@
 {{- if partial "signature-needed.html" . -}}
 <script src="{{ `/signature/signature.js` | relURL }}" defer></script>
 {{- end -}}
+<script src="//cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
 {{ $js := resources.Get "js/main.js" | js.Build | minify | fingerprint }}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>

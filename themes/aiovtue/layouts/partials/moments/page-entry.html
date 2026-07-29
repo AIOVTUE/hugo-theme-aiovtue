@@ -32,7 +32,14 @@
   id="moments-entry-{{ $index }}"
   data-entry-key="{{ $entryKey }}"
 >
-  <img class="travel-moment__avatar" src="{{ .avatar }}" alt="" width="42" height="42" loading="lazy" decoding="async">
+  {{- partial "author-avatar.html" (dict
+    "src" .avatar
+    "class" "travel-moment__avatar"
+    "alt" ""
+    "width" 42
+    "height" 42
+    "play" false
+  ) -}}
   <div class="travel-moment__main">
     <p class="travel-moment__name">{{ .authorName }}</p>
     {{- with $parsed.text -}}

@@ -192,8 +192,9 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   
   
   [params.home]
-    layout = 'cards'   # （cards，list，timeline）建议不要使用时间线模式，即timeline，不成熟样式
+    layout = 'list'   # （cards，list，timeline）建议不要使用时间线模式，即timeline，不成熟样式
     desktopListColumns = 'single' # （single，double）list模式下单双列样式切换在此配置
+    desktopListItemStyle = 'list' # layout=list时，single模式下选择文章列表为list/cards样式
     mobileCardsLayout = 'list'     #移动端样式设置（list、stack）注意桌面端cards和list模式下移动端布局略有区别，具体自行切换查看和体验
     mobileCardsBatchSize = 10  # 每页文章数，这个和上一个配置都是桌面移动端通用的，只是名字没改而已
     # timelineBatchSize = 10   # 时间线模式：首屏条数及每次滚动加载条数
@@ -206,6 +207,9 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     # 下方配置不建议动，过大会影响网页性能
     featuredCount = 4           # list 模式推荐区同时可见卡片数
     featuredPoolCount = 12      # list 模式推荐区候选池（排序后取前 N 篇 SSR，供切换按钮轮换）
+    mobileNoticeTicker = true   # 移动端单行滚动公告
+    featuredDesktop = true      # 电脑端推荐文章区
+    featuredMobile = true       # 移动端推荐文章区
     
   [params.notice]
     title = '公告栏'

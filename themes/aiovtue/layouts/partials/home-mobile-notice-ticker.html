@@ -1,0 +1,42 @@
+{{- /*
+  Mobile-only single-line scrolling notice ticker (list home).
+  Reuses params.notice.sections[].lines; skips image-only lines.
+  Gated by params.home.mobileNoticeTicker (default true; explicit false hides).
+*/ -}}
+{{- $homeParams := site.Params.home | default dict -}}
+{{- $tickerEnable := partial "bool-param.html" (dict
+  "Param" "home.mobileNoticeTicker"
+  "Map" $homeParams
+  "Key" "mobileNoticeTicker"
+  "Default" true
+) -}}
+{{- if eq $tickerEnable true -}}
+{{- with site.Params.notice -}}
+{{- $items := slice -}}
+{{- range .sections -}}
+  {{- range .lines -}}
+    {{- $line := strings.TrimSpace (. | default "") -}}
+    {{- if and $line (not (findRE `^!\[[^\]]*\]\([^)]+\)\s*$` $line)) -}}
+      {{- $items = $items | append $line -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $items -}}
+{{- $title := .title | default "公告栏" -}}
+<div class="home-mobile-notice-ticker" role="region" aria-label="{{ $title }}">
+  <div class="home-mobile-notice-ticker__viewport">
+    <div class="home-mobile-notice-ticker__track">
+      {{- range seq 2 -}}
+      <div class="home-mobile-notice-ticker__group">
+        {{- range $i, $line := $items -}}
+          {{- if $i -}}<span class="home-mobile-notice-ticker__sep" aria-hidden="true">·</span>{{- end -}}
+          <span class="home-mobile-notice-ticker__item">{{- partial "notice-board-md.html" $line -}}</span>
+        {{- end -}}
+      </div>
+      {{- end -}}
+    </div>
+  </div>
+</div>
+{{- end -}}
+{{- end -}}
+{{- end -}}

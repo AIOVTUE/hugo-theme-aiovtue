@@ -1,10 +1,21 @@
 {{- $pageLayout := .PageLayout -}}
 {{- $group := .Group -}}
+{{- $shuffleDefault := true -}}
+{{- if isset . "ShuffleDefault" -}}
+  {{- $shuffleDefault = .ShuffleDefault -}}
+{{- end -}}
 {{- $groupLayout := $group.type | default $pageLayout -}}
 {{- if not (in (slice "preview" "simple") $groupLayout) -}}
   {{- $groupLayout = $pageLayout -}}
 {{- end -}}
-<section class="links-preview-group links-preview-group--{{ $groupLayout }}">
+{{- $shuffle := $shuffleDefault -}}
+{{- if isset $group "shuffle" -}}
+  {{- $shuffle = $group.shuffle -}}
+{{- end -}}
+<section
+  class="links-preview-group links-preview-group--{{ $groupLayout }}"
+  data-shuffle="{{ if $shuffle }}true{{ else }}false{{ end }}"
+>
   <header class="links-preview-group__header">
     <h2 class="links-preview-group__title">
       <span class="links-preview-group__title-icon" aria-hidden="true">📌</span>

@@ -6,7 +6,7 @@
     <p class="notice-board__label">{{ .label }}</p>
     <ul>
       {{- range .lines -}}
-      <li><a href="https://{{ . }}" target="_blank" rel="noopener">{{ . }}</a></li>
+      {{- partial "notice-board-line.html" . -}}
       {{- end -}}
     </ul>
   </div>

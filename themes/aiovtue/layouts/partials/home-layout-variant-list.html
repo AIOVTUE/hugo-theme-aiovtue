@@ -19,6 +19,7 @@
     {{- end -}}
     <div class="home-list-main">
       <div class="sakura-post-list home-post-list"{{ if $postListId }} id="home-post-list"{{ end }}>
+        {{- partial "home-mobile-notice-ticker.html" $pageCtx -}}
         {{- if and .FeaturedPool (not (.SkipFeatured | default false)) -}}
           {{- partial "home-list-featured.html" (dict "Pool" .FeaturedPool) -}}
         {{- end -}}

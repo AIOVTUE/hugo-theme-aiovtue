@@ -1,7 +1,12 @@
 {{- $posts := where .Site.RegularPages "Section" "in" (slice "posts" "excalidraw") -}}
 <div class="home-list-sidebar-card home-list-sidebar-site-info">
   <a href="{{ `/about/` | relLangURL }}" class="home-list-sidebar-site-info__avatar">
-    <img src="{{ .Site.Params.author.avatar | relURL }}" alt="{{ .Site.Params.author.name }}" width="96" height="96" loading="lazy">
+    {{- partial "author-avatar.html" (dict
+      "alt" .Site.Params.author.name
+      "width" 96
+      "height" 96
+      "play" true
+    ) -}}
   </a>
   <p class="home-list-sidebar-site-info__name">
     <a href="{{ `/about/` | relLangURL }}">{{ .Site.Params.author.name }}</a>

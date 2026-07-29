@@ -6,6 +6,12 @@
   --weekly-rule: color-mix(in srgb, var(--sakura-color-text) 14%, transparent);
   --weekly-accent-a: #d65757;
   --weekly-accent-b: #607d96;
+  --weekly-card-shadow:
+    0 10px 24px color-mix(in srgb, #000 10%, transparent),
+    0 2px 8px color-mix(in srgb, #000 6%, transparent);
+  --weekly-card-hover-shadow:
+    0 14px 30px color-mix(in srgb, #000 13%, transparent),
+    0 4px 12px color-mix(in srgb, #000 7%, transparent);
 
   .sakura-page-content {
     width: 100%;
@@ -19,6 +25,12 @@
 html.dark .sakura-weekly-page {
   --weekly-accent-a: #e07070;
   --weekly-accent-b: #7a9ab3;
+  --weekly-card-shadow:
+    0 12px 26px color-mix(in srgb, #000 24%, transparent),
+    0 2px 8px color-mix(in srgb, #000 16%, transparent);
+  --weekly-card-hover-shadow:
+    0 16px 34px color-mix(in srgb, #000 30%, transparent),
+    0 4px 12px color-mix(in srgb, #000 18%, transparent);
 }
 
 .weekly-empty {
@@ -119,16 +131,25 @@ html.dark .sakura-weekly-page {
   min-height: 220px;
   background: #fff;
   border: 1px solid var(--weekly-rule);
-  box-shadow: none;
+  box-shadow: var(--weekly-card-shadow);
   overflow: hidden;
-  transition: transform 0.24s ease;
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
 
   &:hover {
     transform: translateY(-2px);
+    box-shadow: var(--weekly-card-hover-shadow);
   }
 
   &.is-pinned {
-    box-shadow: inset 4px 0 0 var(--weekly-card-accent);
+    box-shadow:
+      inset 4px 0 0 var(--weekly-card-accent),
+      var(--weekly-card-shadow);
+
+    &:hover {
+      box-shadow:
+        inset 4px 0 0 var(--weekly-card-accent),
+        var(--weekly-card-hover-shadow);
+    }
   }
 }
 
@@ -151,16 +172,25 @@ html.dark .weekly-card--mag {
   min-height: 200px;
   background: #fff;
   border: 1px solid var(--weekly-rule);
-  box-shadow: none;
+  box-shadow: var(--weekly-card-shadow);
   overflow: hidden;
-  transition: transform 0.24s ease;
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
 
   &:hover {
     transform: translateY(-2px);
+    box-shadow: var(--weekly-card-hover-shadow);
   }
 
   &.is-pinned {
-    box-shadow: inset 4px 0 0 var(--weekly-card-accent);
+    box-shadow:
+      inset 4px 0 0 var(--weekly-card-accent),
+      var(--weekly-card-shadow);
+
+    &:hover {
+      box-shadow:
+        inset 4px 0 0 var(--weekly-card-accent),
+        var(--weekly-card-hover-shadow);
+    }
   }
 
   .weekly-card__link {

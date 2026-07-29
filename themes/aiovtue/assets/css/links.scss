@@ -451,11 +451,10 @@ html.dark .links-preview-shot--excerpt {
   }
 
   .links-preview-desc {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    white-space: normal;
+    display: block;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .links-preview-hover-shot {

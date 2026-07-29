@@ -1,0 +1,38 @@
+{{- /*
+  Read a bool param with default, respecting explicit false.
+  Dict keys:
+    Param   — dotted path for site.Param, e.g. "home.mobileNoticeTicker" (preferred)
+    Map+Key — optional fallback map lookup (original + lowercased key)
+    Default — bool default when unset / non-bool
+*/ -}}
+{{- $default := .Default -}}
+{{- if eq $default nil -}}{{- $default = false -}}{{- end -}}
+{{- $val := $default -}}
+{{- $resolved := false -}}
+{{- with .Param -}}
+  {{- $raw := site.Param . -}}
+  {{- if eq (printf "%T" $raw) "bool" -}}
+    {{- $val = $raw -}}
+    {{- $resolved = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (not $resolved) .Map .Key -}}
+  {{- $map := .Map -}}
+  {{- $key := .Key -}}
+  {{- $raw := false -}}
+  {{- $has := false -}}
+  {{- if isset $map $key -}}
+    {{- $raw = index $map $key -}}
+    {{- $has = true -}}
+  {{- else -}}
+    {{- $lower := lower $key -}}
+    {{- if isset $map $lower -}}
+      {{- $raw = index $map $lower -}}
+      {{- $has = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and $has (eq (printf "%T" $raw) "bool") -}}
+    {{- $val = $raw -}}
+  {{- end -}}
+{{- end -}}
+{{- return $val -}}

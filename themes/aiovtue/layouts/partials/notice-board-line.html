@@ -1,0 +1,7 @@
+{{- /*
+  Render one notice-board line as <li>.
+*/ -}}
+{{- $line := strings.TrimSpace (. | default "") -}}
+{{- if $line -}}
+  <li class="notice-board__md">{{- partial "notice-board-md.html" $line -}}</li>
+{{- end -}}
