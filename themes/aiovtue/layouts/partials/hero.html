@@ -16,8 +16,22 @@
       <div class="sakura-slit-in-horizontal sakura-info-card">
         <div class="sakura-social-card">
           <div class="sakura-hitokoto-quote">
+            {{- $mottoRaw := .Site.Params.hero.motto -}}
+            {{- $mottos := slice -}}
+            {{- if reflect.IsSlice $mottoRaw -}}
+              {{- range $mottoRaw -}}
+                {{- $line := strings.TrimSpace (. | string) -}}
+                {{- if $line -}}{{- $mottos = $mottos | append $line -}}{{- end -}}
+              {{- end -}}
+            {{- else -}}
+              {{- $line := strings.TrimSpace ($mottoRaw | default "" | string) -}}
+              {{- if $line -}}{{- $mottos = slice $line -}}{{- end -}}
+            {{- end -}}
+            {{- $mottoFallback := "" -}}
+            {{- with $mottos -}}{{- $mottoFallback = index . 0 -}}{{- end -}}
             <iconify-icon icon="fa6-solid:quote-left" class="sakura-hitokoto-quote-icon" aria-hidden="true"></iconify-icon>
-            <span class="sakura-hitokoto-text" id="hero-hitokoto" data-fallback="{{ .Site.Params.hero.motto }}" data-enable-hitokoto="{{ default true .Site.Params.hero.enableHitokoto }}" data-typewriter="{{ default true .Site.Params.hero.typewriter }}" data-speed="{{ default 80 .Site.Params.hero.typewriterSpeed }}"></span>
+            <span class="sakura-hitokoto-text" id="hero-hitokoto" data-fallback="{{ $mottoFallback }}" data-enable-hitokoto="{{ default true .Site.Params.hero.enableHitokoto }}" data-typewriter="{{ default true .Site.Params.hero.typewriter }}" data-speed="{{ default 80 .Site.Params.hero.typewriterSpeed }}"></span>
+            <script type="application/json" id="hero-mottos-data">{{ $mottos | jsonify }}</script>
             <iconify-icon icon="fa6-solid:quote-right" class="sakura-hitokoto-quote-icon" aria-hidden="true"></iconify-icon>
           </div>
           <div class="sakura-hero-social-row">

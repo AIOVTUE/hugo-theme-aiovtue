@@ -147,7 +147,14 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 
   [params.hero]
     title = 'AIOVTUE'
-    motto = '雨是神的烟花'
+    # motto：关闭一言时显示的格言；字符串=固定一句，数组=每次随机一条（打字机效果同一言）
+    motto = [
+      '雨是神的烟花',
+      '山河远阔，人间烟火',
+      '愿你眼中有光，心中有爱',
+      '慢慢来，也比较快',
+      '风停了，云还在走',
+    ]
     randomUrls = true      # 随机切换背景
     enableHitokoto = true  # 一言 API 随机格言
     typewriter = true      # 打字机效果
@@ -194,7 +201,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   [params.home]
     layout = 'list'   # （cards，list，timeline）建议不要使用时间线模式，即timeline，不成熟样式
     desktopListColumns = 'single' # （single，double）list模式下单双列样式切换在此配置
-    desktopListItemStyle = 'list' # layout=list时，single模式下选择文章列表为list/cards样式
+    desktopListItemStyle = 'cards' # layout=list时，single模式下选择文章列表为list/cards样式
     mobileCardsLayout = 'list'     #移动端样式设置（list、stack）注意桌面端cards和list模式下移动端布局略有区别，具体自行切换查看和体验
     mobileCardsBatchSize = 10  # 每页文章数，这个和上一个配置都是桌面移动端通用的，只是名字没改而已
     # timelineBatchSize = 10   # 时间线模式：首屏条数及每次滚动加载条数

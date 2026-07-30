@@ -328,6 +328,55 @@ export function initHeroMedia() {
 const HITOKOTO_CACHE_KEY = 'sakura-hitokoto'
 const HITOKOTO_CACHE_TTL = 30 * 60 * 1000
 
+function readMottoList() {
+  const node = document.getElementById('hero-mottos-data')
+  if (!node) return []
+  try {
+    const raw = JSON.parse(node.textContent || '[]')
+    const mottos = typeof raw === 'string' ? JSON.parse(raw) : raw
+    if (!Array.isArray(mottos)) return []
+    return mottos
+      .map((item) => String(item ?? '').trim())
+      .filter(Boolean)
+  } catch (_) {
+    return []
+  }
+}
+
+function pickRandomMotto(fallback = '') {
+  const mottos = readMottoList()
+  if (mottos.length === 0) return fallback
+  if (mottos.length === 1) return mottos[0]
+  return mottos[Math.floor(Math.random() * mottos.length)]
+}
+
+function waitUntilPageContentVisible(timeoutMs = 8000) {
+  if (!document.body?.classList.contains('sakura-loading')) {
+    return Promise.resolve()
+  }
+
+  return new Promise((resolve) => {
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      window.removeEventListener('sakura:page-content-visible', finish)
+      observer.disconnect()
+      window.clearTimeout(timer)
+      resolve()
+    }
+    const tryFinish = () => {
+      if (!document.body.classList.contains('sakura-loading')) finish()
+    }
+
+    const observer = new MutationObserver(tryFinish)
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] })
+    window.addEventListener('sakura:page-content-visible', finish)
+    const timer = window.setTimeout(finish, timeoutMs)
+    tryFinish()
+  })
+}
+
 async function fetchHitokotoText() {
   try {
     const cached = sessionStorage.getItem(HITOKOTO_CACHE_KEY)
@@ -357,19 +406,19 @@ export async function initHeroHitokoto() {
 
   registerPageCleanup(cancelTypeWriter)
 
-  const fallback = el.dataset.fallback || ''
+  const fallback = pickRandomMotto(el.dataset.fallback || '')
   const enableHitokoto = el.dataset.enableHitokoto !== 'false'
   const useTypewriter = el.dataset.typewriter !== 'false'
   const speed = Number(el.dataset.speed || 80)
 
-  let text = fallback
-  if (enableHitokoto) {
-    try {
-      text = await fetchHitokotoText()
-    } catch (_) {
-      text = fallback
-    }
-  }
+  const textPromise = enableHitokoto
+    ? fetchHitokotoText().catch(() => fallback)
+    : Promise.resolve(fallback)
+
+  await waitUntilPageContentVisible()
+  if (!document.getElementById('hero-hitokoto')) return
+
+  const text = await textPromise
 
   if (useTypewriter) {
     await typeWriter(el, text, speed)
