@@ -68,7 +68,7 @@
 ;(function () {
   try {
     var stored = localStorage.getItem('sakura-theme')
-    if (stored === 'dark') {
+    if (stored !== 'light') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')

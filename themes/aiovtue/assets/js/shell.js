@@ -43,6 +43,14 @@ function applyTheme(root, isDark) {
   localStorage.setItem('sakura-theme', isDark ? 'dark' : 'light')
 }
 
+function resolveThemePreference() {
+  try {
+    return localStorage.getItem('sakura-theme') === 'light' ? 'light' : 'dark'
+  } catch (_) {
+    return 'dark'
+  }
+}
+
 function getThemeToggleOrigin(event) {
   const button = document.getElementById('theme-toggle')
   const rect = button?.getBoundingClientRect()
@@ -105,8 +113,7 @@ function toggleTheme(event) {
 
 export function bootShell({ mountPage, unmountPage }) {
   const root = document.documentElement
-  const stored = localStorage.getItem('sakura-theme')
-  if (stored === 'dark') {
+  if (resolveThemePreference() === 'dark') {
     root.classList.add('dark')
   } else {
     root.classList.remove('dark')
