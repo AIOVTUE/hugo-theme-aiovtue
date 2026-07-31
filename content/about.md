@@ -2,7 +2,7 @@
 # 关于页：正文写在下方 Markdown 中；layout: about 使用主题关于模板
 title: "关于我"
 layout: "about"
-cover: "/hero/hero-2.png"
+cover: "/hero/tt.jpg"
 date: 2026-06-05
 tocStartLevel: 2
 tocEndLevel: 3

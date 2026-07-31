@@ -32,7 +32,7 @@
 baseURL = 'https://daily.yybb.us/'
 locale = 'zh-cn'
 defaultContentLanguage = 'zh'
-title = 'AIOVTUE-雪'          # 站点名称（浏览器标题、页脚版权等）
+title = 'HeZhen'          # 站点名称（浏览器标题、页脚版权等）
 theme = 'aiovtue'           # 主题目录：themes/aiovtue/
 hasCJKLanguage = true      # 启用中文分词（搜索、摘要等）
 enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layouts/robots.txt）
@@ -88,9 +88,9 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 # 站点参数（主题通过 .Site.Params 读取）
 # =============================================================================
 [params]
-  subtitle = '雪'                              # 副标题（首页标题后缀）
-  description = '雨是神的烟花'                  # 站点默认描述（SEO、分享卡片）
-  primaryColor = '#DF9193'                     # 主题主色
+  subtitle = 'Blog'                              # 副标题（首页标题后缀）
+  description = '活在当下'                  # 站点默认描述（SEO、分享卡片）
+  primaryColor = '#91c5df'                     # 主题主色
   favicon = '/hero/avatar.png'
   defaultCover = '/hero/tt3.png'               # 文章默认头图（无 cover 时使用）
   math = false                                 # 默认关闭；单篇 front matter 写 math: true 启用构建时 KaTeX 渲染
@@ -114,8 +114,8 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # --- 追番页（Bilibili 追番列表，构建时拉取 data/bangumi.json）---
   [params.bangumi]
     enable = true                             # 是否启用追番页与构建时数据拉取
-    vmid = '334423445'                        # Bilibili 用户 UID（追番列表需空间公开）
-    quote = '生命不息，追番不止！'              # 页面引言
+    vmid = '3546719952308987'                        # Bilibili 用户 UID（追番列表需空间公开）
+    quote = '你所__的，就是你的__'              # 页面引言
 
   # --- Excalidraw 画板文章（content/excalidraw/<slug>/index.md + *.excalidraw）---
   # 独立栏目，首页/归档/搜索与 posts 合并展示；单页为交互式只读查看器
@@ -128,7 +128,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 
   # --- 侧栏 / 关于页作者信息 ---
   [params.author]
-    name = '作者名称'
+    name = 'HeZhen.HQG'
     avatar = '/hero/avatar.png'
     statusEmoji = '🌸'     # 头像角标
     statusMessage = '发呆ing...'
@@ -146,39 +146,34 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     lineOpacityDark = 0.1
 
   [params.hero]
-    title = 'AIOVTUE'
+    title = 'HeZhen'
     # motto：关闭一言时显示的格言；字符串=固定一句，数组=每次随机一条（打字机效果同一言）
     motto = [
-      '雨是神的烟花',
-      '山河远阔，人间烟火',
-      '愿你眼中有光，心中有爱',
-      '慢慢来，也比较快',
-      '风停了，云还在走',
+      "I may not be the best, but I'm far from the worst",
+      "I may not be perfect, but I'm loving this life",
+      "As I look at the rising sun, I know I have just begun",
+      "Keep a vision on the one you've been chasing",
     ]
     randomUrls = true      # 随机切换背景
-    enableHitokoto = true  # 一言 API 随机格言
+    enableHitokoto = false  # 一言 API 随机格言
     typewriter = true      # 打字机效果
-    typewriterSpeed = 80
+    typewriterSpeed = 20
     style = 'dot'          # 背景样式：dot / grid 等
     fixedImg = true
     playerUrl = '/hero/player.mp4'
     urls = [
-      '/hero/tt3.png',
-      '/hero/tt1.png',
-      '/hero/tt2.png',
-      '/hero/sp1.mp4',
-      '/hero/hero-1.jpg', 
-      '/hero/hero-2.png', 
-      '/hero/hero-1.mp4',
-      '/hero/hero-2.mp4',
-      
+      '/hero/hero.mp4', 
+      '/hero/hero-1.mp4', 
+      '/hero/hero-2.mp4', 
+      '/hero/hero-3_compressed.webm', 
+
     ]
 
   # --- 页脚 ---
   [params.footer]
-    since = 2024           # 版权起始年
-    runtimeSince = '2024-01-01'   # 站点运行倒计时起点（YYYY-MM-DD）
-    icp = '<a href="https://icp.gov.moe/?keyword=20260258" target="_blank" rel="noopener">萌ICP备20260258号</a>'
+    since = 2026           # 版权起始年
+    runtimeSince = '2026-07-30'   # 站点运行倒计时起点（YYYY-MM-DD）
+    # icp = '<a href="https://icp.gov.moe/?keyword=20260258" target="_blank" rel="noopener">萌ICP备20260258号</a>'
 
 # --- 首页公告栏（右侧域名列表）---
   # --- 首页文章列表布局 ---
@@ -226,27 +221,30 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
       lines = ['daily.yybb.us', 'day.yybb.us']
     [[params.notice.sections]]
       label = '--- 这是公告 ---'
-      lines = ['公告在配置文件中修改哦']
+      lines = [
+        'Mail：ylzhaowilliam@qq.com',
+        'Github：https://github.com/NoSkillHeZhen',
+      ]
 
   # --- 侧栏 / Hero 社交图标（icon 为 Iconify 图标名）---
-  [[params.social]]
-    name = 'RSS'
-    link = '/index.xml'  # Hugo 默认 RSS 路径
-    icon = 'ri:rss-line'
-    color = 'orange'
+  # [[params.social]]
+  #   name = 'RSS'
+  #   link = '/index.xml'  # Hugo 默认 RSS 路径
+  #   icon = 'ri:rss-line'
+  #   color = 'orange'
   [[params.social]]
     name = 'GitHub'
-    link = 'https://github.com/AIOVTUE'
+    link = 'https://github.com/NoSkillHeZhen'
     icon = 'ri:github-line'
     color = '#6e5494'
-  [[params.social]]
-    name = '微信公众号'
-    link = '/hero/wxgzh.png'
-    icon = 'ri:wechat-2-line'
-    color = '#1AAD19'
+  # [[params.social]]
+  #   name = '微信公众号'
+  #   link = '/hero/wxgzh.png'
+  #   icon = 'ri:wechat-2-line'
+  #   color = '#1AAD19'
   [[params.social]]
     name = 'E-Mail'
-    link = 'mailto:x@yybb.us'
+    link = 'mailto:ylzhaowilliam@qq.com'
     icon = 'ri:mail-line'
     color = '#8E71C1'
   [[params.social]]
@@ -263,8 +261,8 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
   # --- 文章页底部赞助按钮 ---
   [params.sponsor]
     enable = true
-    title = '我很可爱，请给我钱！'
-    description = '我很可爱哦，可以给我点钱钱嘛~'
+    title = '喜欢本文？赞赏作者！'
+    description = '111真送吗'
     [[params.sponsor.methods]]
       name = '支付宝'
       url = '/img/zfb.png'
@@ -325,8 +323,8 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
 
   # --- 顶栏标题 ---
   [params.navbar]
-    titleParts = ['AIOVTUE-', '雪']   # 顶栏主标题分段（可产生动画效果）
-    subTitle = '雨是神的烟花'
+    titleParts = ["HeZhen's", 'Blog']   # 顶栏主标题分段（可产生动画效果）
+    subTitle = '活在当下'
     offset = 0
 
     # 移动端下滑隐藏顶栏（默认首页不生效，设 includeHome = true 则全站含首页生效）
@@ -428,7 +426,7 @@ enableRobotsTXT = true     # 生成 robots.txt（模板在 themes/aiovtue/layout
     ]
     server = 'netease'
     type = 'playlist'                             # playlist | song | album | artist
-    id = '2580064383'                             # 网易云歌单/歌曲 ID
+    id = '7441022079'                             # 网易云歌单/歌曲 ID
 
   # --- Live2D 看板娘（左下角 Live2D 角色）---
   # enable：是否启用；单页可在 front matter 写 live2d: false 关闭

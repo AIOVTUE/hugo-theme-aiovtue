@@ -15,8 +15,6 @@ importers:
         specifier: ^0.34.5
         version: 0.34.5
 
-  packages/hugoautogen: {}
-
 packages:
 
   '@canvas/image-data@1.1.0':

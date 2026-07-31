@@ -2,7 +2,7 @@
 title: "动态"
 layout: "moments"
 icon: "ant-design:compass-filled"
-cover: "/hero/hero-1.mp4"
+cover: "/hero/aliceBanner.png"
 cascade:
   - target:
       kind: page
