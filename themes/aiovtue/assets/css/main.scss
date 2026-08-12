@@ -2614,6 +2614,10 @@ html.dark .notice-board-wrap__notice { border-color: var(--sakura-color-divider)
     flex-direction: column;
     gap: 14px;
     min-width: 0;
+    /* Collapsed columns keep display for width animation, but must not
+       contribute content height or the article list gets a huge bottom gap. */
+    min-height: 0;
+    height: 0;
     margin-right: var(--home-list-sidebar-offset);
     overflow: hidden;
     opacity: 0;
@@ -2630,6 +2634,8 @@ html.dark .notice-board-wrap__notice { border-color: var(--sakura-color-divider)
   .sakura-home-layout.is-layout-list .home-list-random-sidebar {
     display: block;
     min-width: 0;
+    min-height: 0;
+    height: 0;
     margin-left: var(--home-list-random-sidebar-offset);
     overflow: hidden;
     opacity: 0;
@@ -3240,6 +3246,7 @@ html.dark .notice-board-wrap__notice { border-color: var(--sakura-color-divider)
 
   .sakura-home-layout.is-layout-list .home-list-sidebar {
     align-self: stretch;
+    height: auto;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -3285,6 +3292,7 @@ html.dark .notice-board-wrap__notice { border-color: var(--sakura-color-divider)
     position: sticky;
     top: calc(var(--sakura-navbar-layout-offset) + 16px);
     z-index: 3;
+    height: auto;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
